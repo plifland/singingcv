@@ -73,6 +73,8 @@
     <Content Include="app\templates\orgdetail.html" />
     <Content Include="app\templates\orglist.html" />
     <Content Include="db.sqlite3" />
+    <Content Include="docker-compose.yml" />
+    <Content Include="DockerFile" />
     <Content Include="media\headshot.jpg" />
     <Content Include="requirements.txt" />
     <Content Include="app\static\app\content\bootstrap.css" />
