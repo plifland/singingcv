@@ -1,0 +1,32 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+  <h1>{{ orgdetail_list.name }}</h1>
+
+  <p><strong>Conductor:</strong> <a href="">{{ orgdetail_list.conductor.person.get_full_name }}</a></p>
+  <p><strong>Type:</strong> {{ orgdetail_list.type }}</p>
+  <p><strong>Size:</strong> {{ orgdetail_list.size }}</p>
+
+  <div style="margin-left:20px;margin-top:20px">
+    <h4>Performances</h4>
+
+	<table>
+	<tr>
+		<th width="120px">Date</th>
+		<th width="120px">Location</th>
+		<th width="240px">Venue</th>
+		<th width="240px">Name</th>
+	</tr>
+    {% for performance_group in performance %}
+	{% for performance_inst in performance_group.performances.all %}
+    <tr>
+		<td>{{performance_inst.date}}</td>
+		<td>{{performance_inst.city}}</td>
+		<td>{{performance_inst.venue}}</td>
+		<td>{{performance_group.name}}</td>
+	</tr>
+    {% endfor %}
+	{% endfor %}
+	</table>
+  </div>
+{% endblock %}
