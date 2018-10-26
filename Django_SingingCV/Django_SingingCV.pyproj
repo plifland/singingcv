@@ -51,6 +51,7 @@
     <Compile Include="Django_SingingCV\settings.py" />
     <Compile Include="Django_SingingCV\urls.py" />
     <Compile Include="Django_SingingCV\wsgi.py" />
+    <Compile Include="ptvs_virtualenv_proxy.py" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="app\" />
@@ -104,6 +105,7 @@
     <Content Include="app\templates\app\layout.html" />
     <Content Include="app\templates\app\login.html" />
     <Content Include="app\templates\app\loginpartial.html" />
+    <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
     <None Include="readme.html">
