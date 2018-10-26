@@ -27,6 +27,7 @@ SECRET_KEY = '4aef20b8-b0b6-4e60-b313-c7376e9890e3'
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
 	'singingcv.azurewebsites.net',
 	]
 
