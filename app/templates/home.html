@@ -1,0 +1,53 @@
+﻿{% extends "base_generic.html" %}
+
+{% block content %}
+<!-- Image du jour -->
+<div class="w3-content w3-center w3-greyscale-min" style="max-width:1050px">
+	<img src="{{ MEDIA_URL }}groomsmen.jpg" alt="" style="max-width:100%; height: auto; object-fit:contain;" />
+</div>
+	
+<div class="w3-content"
+	style="position:absolute; left:750px; top:380px;
+		border:5px solid tan; border-radius:10px; padding:5px 15px; background:rgba(0,0,0,0.65);">
+	<div class="" style="font-size:180%; font-weight:bold; margin-bottom: 10px;" float="both">Upcoming Performances</div>
+	<div style="margin-bottom:10px; height: 65px;">
+		<div class="" align="center"
+			style="background: rgba(210,180,140,1); display:inline-block; padding:5px 5px 2px 5px;
+					height:65px; width:65px;">
+			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">NOV</span><br />
+			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">11</span>
+		</div>
+		<div style="display:inline-block; height:65px; margin-left: 10px;">
+			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">Bless the Living, Bless the Dead</p>
+			<p style="margin:0px; line-height:1em; margin-bottom:1px;">Yale Camerata - Dr. Maggie Brooks</p>
+			<p style="margin:0px; line-height:1em;">Church of the Redeemer, New Haven CT</p>
+		</div>
+	</div>
+	<div style="margin-bottom:10px; height: 65px;">
+		<div class="" align="center"
+			style="background: rgba(210,180,140,1); display:inline-block; padding:5px 5px 2px 5px;
+					height:65px; width:65px;">
+			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">DEC</span><br />
+			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">01</span>
+		</div>
+		<div style="display:inline-block; height:65px; margin-left: 10px;">
+			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">Advent</p>
+			<p style="margin:0px; line-height:1em; margin-bottom:1px;">Yale Camerata - Dr. Maggie Brooks</p>
+			<p style="margin:0px; line-height:1em;">Battell Chapel, New Haven CT</p>
+		</div>
+	</div>
+	<div style="margin-bottom:10px; height: 65px;">
+		<div class="" align="center"
+			style="background: rgba(210,180,140,1); display:inline-block; padding:5px 5px 2px 5px;
+					height:65px; width:65px;">
+			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">FEB</span><br />
+			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">09</span>
+		</div>
+		<div style="display:inline-block; height:65px; margin-left: 10px;">
+			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">Poulenc Gloria</p>
+			<p style="margin:0px; line-height:1em; margin-bottom:1px;">Yale Camerata - Dr. Maggie Brooks</p>
+			<p style="margin:0px; line-height:1em;">Woolsey Hall, New Haven CT</p>
+		</div>
+	</div>
+</div>
+{% endblock %}
