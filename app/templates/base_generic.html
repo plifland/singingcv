@@ -1,41 +1,56 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  
-  {% block title %}<title>Peter Lifland - CV</title>{% endblock %}
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  
-  <!-- Add additional CSS in static file -->
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-</head>
+<html>
+<title>W3.CSS Template</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% load static %}
+<link rel="stylesheet" href="{% static 'css/w3styles.css' %}">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Archivo:600">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+	body {font-family: "Lato", sans-serif}
+</style>
 
 <body>
 
-  <div class="container-fluid">
-
-    <div class="row">
-      <div class="col-sm-2">
-	  <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:20px">
-	  
-      {% block sidebar %}
-      <ul class="sidebar-nav">
-          <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="{% url 'organizations' %}">All organizations</a></li>
-          <li><a href="">All conductors</a></li>
-          <li><a href="">All composers</a></li>
-          <li><a href="">All pieces</a></li>
-      </ul>
-      {% endblock %}
-      </div>
-      <div class="col-sm-10" style="padding-left:30px;margin-top:5px;">
-      {% block content %}{% endblock %}
-      </div>
-    </div>
+<!-- Navbar -->
+<div class="w3-top">
+  <div class="w3-bar w3-black w3-card">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+	<span class="w3-bar-item w3-padding-large w3-hide-small" 
+		  style="margin-left:150px; font-weight: bold; letter-spacing: 4px;"><span style="color: tan">PETER</span> LIFLAND</span>
+    <a href="{% url 'home' %}" class="w3-bar-item w3-button w3-padding-large w3-margin-left">HOME</a>
+    <a href="{% url 'recordings' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">RECORDINGS</a>
+    <a href="{% url 'bio' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">BIO</a>
+    <a href="{% url 'vocalcv' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">VOCAL CV</a>
+    <a href="{% url 'contact' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left" style="margin-right:150px;">CONTACT</a>
   </div>
+</div>
+
+<!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+<div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
+  <a href="#band" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">BAND</a>
+  <a href="#tour" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">TOUR</a>
+  <a href="#contact" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">CONTACT</a>
+  <a href="#" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MERCH</a>
+</div>
+
+<!-- Page content -->
+<div class="w3-content w3-black" style="max-width:2000px;">
+    {% block content %}{% endblock %}
+<!-- End Page Content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-black w3-padding-64 w3-center w3-xlarge">
+  <i class="fa fa-facebook-official w3-hover-opacity"></i>
+  <i class="fa fa-instagram w3-hover-opacity"></i>
+  <i class="fa fa-snapchat w3-hover-opacity"></i>
+  <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+  <i class="fa fa-twitter w3-hover-opacity"></i>
+  <i class="fa fa-linkedin w3-hover-opacity"></i>
+</footer>
+
 </body>
 </html>

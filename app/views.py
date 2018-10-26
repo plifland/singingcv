@@ -27,7 +27,7 @@ from .models import Composition, Person, Composer, Conductor, Singer, Organizati
         # context={'performances':performances,'organizations':organizations},
     # )
     
-def index(request):
+def vocalcv(request):
     performancesbyyear = {}
     performances = Performance.objects.all()
     organizations = Organization.objects.all()
@@ -42,8 +42,36 @@ def index(request):
     
     return render(
         request,
-        'index.html',
+        'vocalcv.html',
         context={'performancesbyyear':performancesbyyear,'performances':performances,'organizations':organizations},
+    )
+
+def home(request):
+    return render(
+        request,
+        'home.html',
+        context={},
+    )
+
+def recordings(request):
+    return render(
+        request,
+        'recordings.html',
+        context={},
+    )
+
+def bio(request):
+    return render(
+        request,
+        'bio.html',
+        context={},
+    )
+
+def contact(request):
+    return render(
+        request,
+        'contact.html',
+        context={},
     )
         
 
