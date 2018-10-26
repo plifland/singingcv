@@ -26,7 +26,9 @@ SECRET_KEY = '4aef20b8-b0b6-4e60-b313-c7376e9890e3'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+	'singingcv.azurewebsites.net',
+	]
 
 
 # Application definition
