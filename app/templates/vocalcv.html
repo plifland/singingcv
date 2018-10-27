@@ -3,21 +3,42 @@
 {% block content %}
 <h1>Peter Lifland - CV</h1>
 
-  <p>Welcome to my CV, where I record where and what I sing!</p>
+<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="cvsidebar">
+<div class="w3-row w3-padding-32">
+	<div class="w3-col m6">
+	    <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:10px">
+	  
+        {% block sidebar %}
+        <ul class="sidebar-nav">
+            <li><a href="{% url 'vocalcv' %}">Home</a></li>
+            <li><a href="{% url 'organizations' %}">All organizations</a></li>
+            <li><a href="">All conductors</a></li>
+            <li><a href="">All composers</a></li>
+            <li><a href="">All pieces</a></li>
+        </ul>
+        {% endblock %}
+    </div>
+    <div class="w3-col m6" style="padding-top:60px;">
+        <p>Welcome to my CV, where I record where and what I sing!</p>
   
-  <!-- {% for key, item in performancesbyyear.items %}
-  <h4 style="margin-top:30px">{{ key }}</h4>
+        {% for key, item in performancesbyyear.items %}
+        <h4 style="margin-top:30px">{{ key }}</h4>
+        {% endfor %} 
+        
+        <ul>
+        {% for organization in organizations %}
+        <li>{{ organization }} - {{ organization.conductor.person.get_full_name }}</li>
+        {% endfor %}
+        </ul>
   
-  {% for organization in item.organizations %}
-  <p>{{ organization }}</p>
-  {% endfor %}
-  {% endfor %} -->
-  
-  <!-- p>I have sung:</p>
-  <ul>
-    <li><strong>Organizations:</strong> {{ num_organizations }}</li>
-    <li><strong>Conductors:</strong> {{ num_conductors }}</li>
-    <li><strong>Pieces:</strong> {{ num_pieces }}</li>
-  </ul> -->
+        <p>I have sung:</p>
+        <ul>
+            <li><strong>Organizations:</strong> {{ org_count }}</li>
+            <li><strong>Conductors:</strong> {{ conductor_count }}</li>
+            <li><strong>Pieces:</strong> {{ piece_count }}</li>
+        </ul>
+    </div>
+</div>
+</div>
 
 {% endblock %}
