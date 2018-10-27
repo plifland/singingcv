@@ -1,6 +1,9 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
+<div class="w3-row w3-padding-32">
+    <div class="w3-col m6" style="padding-top:60px;">
     <h1>Organization List</h1>
 
     {% if organization_list %}
@@ -15,5 +18,8 @@
     </ul>
     {% else %}
       <p>No organizations found</p>
-    {% endif %}       
+    {% endif %}
+    </div>
+</div>
+</div>
 {% endblock %}

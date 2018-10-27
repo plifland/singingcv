@@ -39,11 +39,21 @@ def vocalcv(request):
                 performancesbyyear[year_key] = {'year': year_key, 'organizations': []}
             if not performance_group.organization in performancesbyyear[year_key]['organizations']:
                 performancesbyyear[year_key]['organizations'].append(performance_group.organization)
+
+    org_count = Organization.objects.count()
+    conductor_count = Conductor.objects.count()
+    piece_count = Composition.objects.count()
     
     return render(
         request,
         'vocalcv.html',
-        context={'performancesbyyear':performancesbyyear,'performances':performances,'organizations':organizations},
+        context={'performancesbyyear':performancesbyyear
+                 ,'performances':performances
+                 ,'organizations':organizations
+                 ,'org_count':org_count
+                 ,'conductor_count':conductor_count
+                 ,'piece_count':piece_count
+                 },
     )
 
 def home(request):
@@ -73,7 +83,13 @@ def contact(request):
         'contact.html',
         context={},
     )
-        
+
+def view_organizations(request):
+    return render(
+        request,
+        'orglist.html',
+        context={},
+    )   
 
 class OrganizationListView(generic.ListView):
     model = Organization
