@@ -20,18 +20,22 @@
     </div>
     <div class="w3-col m6" style="padding-top:60px;">
         <p>Welcome to my CV, where I record where and what I sing!</p>
-  
-        {% for key, item in performancesbyyear.items %}
-        <h4 style="margin-top:30px">{{ key }}</h4>
-        {% endfor %} 
         
+        <p>Present organizations:</p>
         <ul>
-        {% for organization in organizations %}
-        <li>{{ organization }} - {{ organization.conductor.person.get_full_name }}</li>
+        {% for organization in activeorgs %}
+        <li>{{ organization.organization.name }} - {% for con in organization.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+        {% endfor %}
+        </ul>
+
+        <p>Past organizations:</p>
+        <ul>
+        {% for organization in inactiveorgs %}
+        <li>{{ organization.organization.name }} - {% for con in organization.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
         {% endfor %}
         </ul>
   
-        <p>I have sung:</p>
+        <p>Fun aggregate stats:</p>
         <ul>
             <li><strong>Organizations:</strong> {{ org_count }}</li>
             <li><strong>Conductors:</strong> {{ conductor_count }}</li>
