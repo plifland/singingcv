@@ -1,46 +1,28 @@
 import datetime
 
+from django.db.models import Max,Q
 from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition
-
-# def index(request):
-    # """ View function for home page of site """
-    # # Generate counts of some of the main objects
-    # num_organizations = Organization.objects.count()
-    # num_conductors = Conductor.objects.count()
-    # num_pieces = Composition.objects.count()
-    
-    # # Render the HTML template index.html with the data in the context variable
-    # return render(
-        # request,
-        # 'index.html',
-        # context={'num_organizations':num_organizations,'num_conductors':num_conductors,'num_pieces':num_pieces},
-    # )
-    
-# def index(request):
-    # performances = Performance.objects.all()
-    # organizations = Organization.objects.all()
-    
-    # return render(
-        # request,
-        # 'index.html',
-        # context={'performances':performances,'organizations':organizations},
-    # )
     
 def vocalcv(request):
-    performancesbyyear = {}
-    performances = Performance.objects.all()
-    organizations = Organization.objects.all()
+    # Gets the most recent record per organization
+    organizations = Organization.objects.values('id').annotate(maxyear=Max('organizationinstance__year'))
+    organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in organizations]) & Q(year__in=[o['maxyear'] for o in organizations]))
+
+    # Let's add a filter for upcoming performances
+    performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today())
+    #performance_orgs = []
+    #for prf in performances:
+    #    for org in prf.organizations.all():
+    #        performance_orgs.append(org.organization.id)
+    #performance_orgs = list(set(performance_orgs))
+    performance_orgs = list(set(performances.values_list('organizations__organization', flat=True)))
+    activeorgs = organizationinstances.filter(Q(organization__in=performance_orgs))
+    inactiveorgs = organizationinstances.exclude(Q(organization__in=performance_orgs))
     
-    #for performance_group in performances:
-    #    for performance_inst in performance_group.performances.all():
-    #        year_key = performance_inst.date.year
-    #        if not year_key in performancesbyyear:
-    #            performancesbyyear[year_key] = {'year': year_key, 'organizations': []}
-    #        if not performance_group.organization in performancesbyyear[year_key]['organizations']:
-    #            performancesbyyear[year_key]['organizations'].append(performance_group.organization)
+    # Orgs with performances
 
     org_count = Organization.objects.count()
     conductor_count = Conductor.objects.count()
@@ -49,9 +31,8 @@ def vocalcv(request):
     return render(
         request,
         'vocalcv.html',
-        context={'performancesbyyear':performancesbyyear
-                 ,'performances':performances
-                 ,'organizations':organizations
+        context={'activeorgs':activeorgs
+                 ,'inactiveorgs':inactiveorgs
                  ,'org_count':org_count
                  ,'conductor_count':conductor_count
                  ,'piece_count':piece_count
@@ -67,7 +48,7 @@ def home(request):
         upcoming.append(prf)
 
         i += 1
-        if i == 3:
+        if i == 4:
             break
 
     return render(
