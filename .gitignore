@@ -15,3 +15,5 @@
 env
 __pycache__
 local_settings.py
+/app/migrations
+/db_backup.sqlite3

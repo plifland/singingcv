@@ -10,44 +10,22 @@
 	style="position:absolute; left:750px; top:380px;
 		border:5px solid tan; border-radius:10px; padding:5px 15px; background:rgba(0,0,0,0.65);">
 	<div class="" style="font-size:180%; font-weight:bold; margin-bottom: 10px;" float="both">Upcoming Performances</div>
-	<div style="margin-bottom:10px; height: 65px;">
+    
+    {% for prf in upcoming %}
+    <div style="margin-bottom:10px; height: 65px;">
 		<div class="" align="center"
 			style="background: rgba(210,180,140,1); display:inline-block; padding:5px 5px 2px 5px;
 					height:65px; width:65px;">
-			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">NOV</span><br />
-			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">11</span>
+			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"b"|upper }}</span><br />
+			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"d" }}</span>
 		</div>
 		<div style="display:inline-block; height:65px; margin-left: 10px;">
-			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">Bless the Living, Bless the Dead</p>
-			<p style="margin:0px; line-height:1em; margin-bottom:1px;">Yale Camerata - Dr. Maggie Brooks</p>
-			<p style="margin:0px; line-height:1em;">Church of the Redeemer, New Haven CT</p>
+			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">{{ prf.performance.name }}</p>
+			<p style="margin:0px; line-height:1em; margin-bottom:1px; max-width:280px; max-height:17px; overflow: hidden;">{% for org in prf.organizations.all %}{{ org.organization.name }} - {% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endfor %}</p>
+			<p style="margin:0px; line-height:1em;">{{ prf.venue }}, {{ prf.city }}</p>
 		</div>
 	</div>
-	<div style="margin-bottom:10px; height: 65px;">
-		<div class="" align="center"
-			style="background: rgba(210,180,140,1); display:inline-block; padding:5px 5px 2px 5px;
-					height:65px; width:65px;">
-			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">DEC</span><br />
-			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">01</span>
-		</div>
-		<div style="display:inline-block; height:65px; margin-left: 10px;">
-			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">Advent</p>
-			<p style="margin:0px; line-height:1em; margin-bottom:1px;">Yale Camerata - Dr. Maggie Brooks</p>
-			<p style="margin:0px; line-height:1em;">Battell Chapel, New Haven CT</p>
-		</div>
-	</div>
-	<div style="margin-bottom:10px; height: 65px;">
-		<div class="" align="center"
-			style="background: rgba(210,180,140,1); display:inline-block; padding:5px 5px 2px 5px;
-					height:65px; width:65px;">
-			<span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">FEB</span><br />
-			<span style="font-size:260%; font-weight:bold; line-height:0.8em;">09</span>
-		</div>
-		<div style="display:inline-block; height:65px; margin-left: 10px;">
-			<p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px;">Poulenc Gloria</p>
-			<p style="margin:0px; line-height:1em; margin-bottom:1px;">Yale Camerata - Dr. Maggie Brooks</p>
-			<p style="margin:0px; line-height:1em;">Woolsey Hall, New Haven CT</p>
-		</div>
-	</div>
+    {% endfor %}
 </div>
+
 {% endblock %}

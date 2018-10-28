@@ -1,7 +1,9 @@
+import datetime
+
 from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
 
-from .models import Composition, Person, Composer, Conductor, Singer, Organization, PerformanceInstance, Performance, Recording
+from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition
 
 # def index(request):
     # """ View function for home page of site """
@@ -32,13 +34,13 @@ def vocalcv(request):
     performances = Performance.objects.all()
     organizations = Organization.objects.all()
     
-    for performance_group in performances:
-        for performance_inst in performance_group.performances.all():
-            year_key = performance_inst.date.year
-            if not year_key in performancesbyyear:
-                performancesbyyear[year_key] = {'year': year_key, 'organizations': []}
-            if not performance_group.organization in performancesbyyear[year_key]['organizations']:
-                performancesbyyear[year_key]['organizations'].append(performance_group.organization)
+    #for performance_group in performances:
+    #    for performance_inst in performance_group.performances.all():
+    #        year_key = performance_inst.date.year
+    #        if not year_key in performancesbyyear:
+    #            performancesbyyear[year_key] = {'year': year_key, 'organizations': []}
+    #        if not performance_group.organization in performancesbyyear[year_key]['organizations']:
+    #            performancesbyyear[year_key]['organizations'].append(performance_group.organization)
 
     org_count = Organization.objects.count()
     conductor_count = Conductor.objects.count()
@@ -57,10 +59,21 @@ def vocalcv(request):
     )
 
 def home(request):
+    upcoming = []
+    performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today()).order_by('date')
+    
+    i = 0
+    for prf in performances:
+        upcoming.append(prf)
+
+        i += 1
+        if i == 3:
+            break
+
     return render(
         request,
         'home.html',
-        context={},
+        context={'upcoming':upcoming},
     )
 
 def recordings(request):
