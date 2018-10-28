@@ -2,18 +2,8 @@ from django.db import models
 from django.urls import reverse #Used to generate URLs by reversing the URL patterns
 import uuid # Required for unique instances
 
-# Create your models here.
-class Composition(models.Model):
-    """ Model representing a piece of music """
-    title = models.CharField(max_length=200, help_text="Enter a piece title")
-    composer = models.ForeignKey('Composer', on_delete=models.SET_NULL, null=True)
-    
-    def __str__(self):
-        return '{0} - {1}'.format(self.composer, self.title)
-        
-    class Meta:
-        ordering = ["composer","title"]
-        
+### People ###
+# Base class
 class Person(models.Model):
     """ Model representing a human being """
     lastname = models.CharField(max_length=200, help_text="Enter a surname")
@@ -24,71 +14,284 @@ class Person(models.Model):
         
     def get_full_name(self):
         return '{0} {1}'.format(self.firstname, self.lastname)
-        
+
+    class Meta:
+        ordering = ["lastname","firstname"]
+
+# Roles
+class Administrator(models.Model):
+    person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
+    
+    def __str__(self):
+        return str(self.person)
+
+    class Meta:
+        ordering = ["person"]
+
 class Composer(models.Model):
     person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return self.person.lastname
+        return str(self.person)
+
+    class Meta:
+        ordering = ["person"]
         
 class Conductor(models.Model):
     person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return self.person.lastname
+        return str(self.person)
+
+    class Meta:
+        ordering = ["person"]
 
 class Singer(models.Model):
     person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
-    voicepart = models.CharField(max_length=40, help_text="Enter a voice part")
+
+    SOPRANO = 'S'
+    MEZZO = 'M'
+    ALTO = 'A'
+    CONTRALTO = 'CA'
+    COUNTERTENOR = 'CT'
+    TENOR = 'T'
+    BARITONE = 'BR'
+    BASS = 'BS'
+    UNKNOWN = 'U'
+    VOICEPART_CHOICES = (
+        (SOPRANO, 'Soprano'),
+        (MEZZO, 'Mezzo'),
+        (ALTO, 'Alto'),
+        (CONTRALTO, 'Contralto'),
+        (COUNTERTENOR, 'Countertenor'),
+        (TENOR, 'Tenor'),
+        (BARITONE, 'Baritone'),
+        (BASS, 'Bass'),
+        (UNKNOWN, 'Unknown/Other'),
+    )
+    voicepart = models.CharField(max_length=2, choices=VOICEPART_CHOICES, default=UNKNOWN)
     
     def __str__(self):
-        return self.person
+        return str(self.person)
 
+    class Meta:
+        ordering = ["person"]
+
+### Groups ###
+# Base class - immutable information, if one of these changes, it's a new group!
 class Organization(models.Model):
     """ Model representing a singing ensemble/organization """
     name = models.CharField(max_length=200, help_text="Enter an organization name")
-    type = models.CharField(max_length=40, help_text="Enter an organization type")
-    size = models.CharField(max_length=40, help_text="Enter an organization size")
-    url = models.CharField(max_length=200, help_text="Enter an organization url")
-    conductor = models.ForeignKey('Conductor', on_delete=models.SET_NULL, null=True)
-    #hourlypay = 
+
+    COMMUNITY = 'CM'
+    CHURCH = 'CH'
+    PROFESSIONAL = 'PR'
+    SCHOOL = 'SC'
+    UNKNOWN = 'U'
+    TYPE_CHOICES = (
+        (COMMUNITY, 'Community Chorus'),
+        (CHURCH, 'Church Choir'),
+        (PROFESSIONAL, 'Professional'),
+        (SCHOOL, 'School'),
+        (UNKNOWN, 'Unknown/Other'),
+    )
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES, default=UNKNOWN, help_text="Choose an organization type")
+
+    CHAMBER = 'C'
+    SMALL = 'S'
+    MEDIUM = 'M'
+    LARGE = 'L'
+    UNKNOWN = 'U'
+    SIZE_CHOICES = (
+        (CHAMBER, 'Chamber (2-12 voices)'),
+        (SMALL, 'Small (12-24 voices)'),
+        (MEDIUM, 'Medium (24-50 voices)'),
+        (LARGE, 'Large (50+ voices)'),
+        (UNKNOWN, 'Unknown/Other'),
+    )
+    size = models.CharField(max_length=2, choices=SIZE_CHOICES, default=UNKNOWN, help_text="Choose an organization size")
+
+    city = models.CharField(max_length=200, default="Unknown", help_text="Enter an organization city ([City, State] preferred)")
+    url = models.URLField(max_length=200, default="Unknown", help_text="Enter an organization url")
     
     def __str__(self):
         return self.name
-        
+
     def get_absolute_url(self):
         return reverse('organization-detail', args=[str(self.id)])
+
+# Instance, generally expect one per year
+# Invoke the most recent per organization to fill out the base attributes
+class OrganizationInstance(models.Model):
+    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True)
+    year = models.SmallIntegerField(null=False, blank=False)
+    conductors = models.ManyToManyField(Conductor, related_name='conductor_primary', help_text='Primary conductor(s)', blank=True)
+    associateconductors = models.ManyToManyField(Conductor, related_name='conductor_associate', help_text='Associate and assistant conductor(s)', blank=True)
+    administrators = models.ManyToManyField(Administrator, help_text='Administrators and managers', blank=True)
+    singerspaid = models.ManyToManyField(Singer, related_name='singer_paid', help_text='Paid singers and section leaders', blank=True)
+    singersvolunteer = models.ManyToManyField(Singer, related_name='singer_volunteer', help_text='Volunteer singers', blank=True)
+    
+    def __str__(self):
+        conductors_str = ", ".join(s.person.lastname for s in self.conductors.all())
+        return '{0} {1}-{2} ({3})'.format(self.organization, self.year - 1, self.year, conductors_str)
         
+    class Meta:
+        ordering = ["organization","-year"]
+
+
+### Peformances and recordings ###
+# Base class, not much here
+class Performance(models.Model):
+    name = models.CharField(max_length=200, help_text="Enter an performance/recording name")
+    
+    PERFORMANCE = 'P'
+    RECORDING = 'R'
+    TYPE_CHOICES = (
+        (PERFORMANCE, 'Performance'),
+        (RECORDING, 'Recording'),
+    )
+    type = models.CharField(max_length=2, choices=TYPE_CHOICES, default=PERFORMANCE, help_text="Choose a performance type")
+    
+    def __str__(self):
+        return '{0}: {1}'.format(self.get_type_display(), self.name)
+
 class PerformanceInstance(models.Model):
-    """ Model representing a singing performance date """
-    venue = models.CharField(max_length=200, help_text="Enter an concert venue")
-    city = models.CharField(max_length=200, help_text="Enter the concert city, state", null=True)
+    performance = models.ForeignKey('Performance', on_delete=models.SET_NULL, null=True)
+    organizations = models.ManyToManyField(OrganizationInstance, help_text='Organization(s)')
+    venue = models.CharField(max_length=200, default="Unknown", help_text="Enter an concert venue")
+    city = models.CharField(max_length=200, default="Unknown", help_text="Enter the concert ([city, state] preferred)")
     date = models.DateField(null=False, blank=False)
     
     def __str__(self):
-        return '{0} - {1}'.format(self.date, self.venue)
+        return '{0} - {1} - {2}'.format(self.performance.name, self.date, self.venue)
         
     class Meta:
         ordering = ["-date","city","venue"]
-        
-class Performance(models.Model):
-    """ Model representing a singing performance group """
-    name = models.CharField(max_length=200, help_text="Enter an concert name")
-    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True)
-    performances = models.ManyToManyField(PerformanceInstance, help_text='When/where was this performance?')
-    pieces = models.ManyToManyField(Composition, help_text='What pieces were in this concert?')
+
+class PerformancePiece(models.Model):
+    performanceinstance = models.ForeignKey('PerformanceInstance', on_delete=models.SET_NULL, null=True)
+    organizations = models.ManyToManyField(Organization, help_text='Organization(s)')
+    composition = models.ForeignKey('Composition', on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return '{0} - {1}'.format(self.organization, self.name)
+        return '{0} - {1}'.format(self.composition.name, self.performanceinstance.performance.name)
         
-class Recording(models.Model):
-    """ Model representing a singing recording """
-    name = models.CharField(max_length=200, help_text="Enter an recording name")
-    organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True)
-    venue = models.CharField(max_length=200, help_text="Enter an recording venue")
-    url = models.CharField(max_length=200, help_text="Enter an recording link")
-    date = models.DateField(null=False, blank=False)
-    pieces = models.ManyToManyField(Composition, help_text='What pieces were in this concert?')
+    class Meta:
+        ordering = ["performanceinstance","composition"]
+
+### Works of music ###
+# Base class
+class Composition(models.Model):
+    """ Model representing a piece of music """
+    title = models.CharField(max_length=200, help_text="Enter a piece title")
+    composer = models.ForeignKey('Composer', on_delete=models.SET_NULL, null=True)
+
+    ANTHEM = 'AN'
+    CHANT = 'CH'
+    CLASSICROMANTIC = 'CR'
+    CONTEMPORARY = 'CO'
+    EASTEUROPEAN = 'EE'
+    FOLKSONG = 'FK'
+    HYMN = 'HY'
+    JAZZ = 'JZ'
+    MADRIGAL = 'MA'
+    MASTERWORK = 'MK'
+    POLYPHONY = 'PL'
+    SHAPENOTE = 'SH'
+    UNKNOWN = 'U'
+    GENRE_CHOICES = (
+        (ANTHEM, 'Anthem'),
+        (CHANT, 'Chant'),
+        (CLASSICROMANTIC, 'Classical/Romantic'),
+        (CONTEMPORARY, 'Contemporary'),
+        (EASTEUROPEAN, 'East European/Slavonic'),
+        (FOLKSONG, 'Folksong'),
+        (HYMN, 'Hymn'),
+        (JAZZ, 'Jazz'),
+        (MADRIGAL, 'Madrigal/Partsong'),
+        (MASTERWORK, 'Masterwork'),
+        (POLYPHONY, 'Polyphony'),
+        (SHAPENOTE, 'Shapenote'),
+        (UNKNOWN, 'Unknown/Other'),
+    )
+    genre = models.CharField(max_length=2, choices=GENRE_CHOICES, default=UNKNOWN, help_text="Choose a genre")
+    
+    AFRIKAANS = 'AF'
+    ARABIC = 'AR'
+    CATALAN = 'CA'
+    CHINESE = 'ZH'
+    CZECH = 'CS'
+    DANISH = 'DA'
+    DUTCH = 'NL'
+    ENGLISH = 'EN'
+    FINNISH = 'FI'
+    FRENCH = 'FR'
+    GEORGIAN = 'KA'
+    GERMAN = 'DE'
+    GREEK = 'EL'
+    HEBREW = 'HE'
+    HINDI = 'HI'
+    HUNGARIAN = 'HU'
+    ICELANDIC = 'IS'
+    IRISH = 'GA'
+    ITALIAN = 'IT'
+    JAPANESE = 'JA'
+    KOREAN = 'KO'
+    LATIN = 'LA'
+    NORWEGIAN = 'NO'
+    POLISH = 'PL'
+    PORTUGUESE = 'PR'
+    RUSSIAN = 'RU'
+    SLAVONIC = 'CU'
+    SPANISH = 'ES'
+    SWAHILI = 'SW'
+    SWEDISH = 'SV'
+    THAI = 'TH'
+    TURKISH = 'TR'
+    WELSE = 'CY'
+    YIDDISH = 'YI'
+    UNKNOWN = 'U'
+    LANGUAGE_CHOICES = (
+        (ENGLISH, 'English'),
+        (LATIN, 'Latin'),
+        (AFRIKAANS, 'Afrikaans'),
+        (ARABIC, 'Arabic'),
+        (CATALAN, 'Catalan'),
+        (CHINESE, 'Chinese (all)'),
+        (CZECH, 'Czech'),
+        (DANISH, 'Danish'),
+        (DUTCH, 'Dutch'),
+        (FINNISH, 'Finnish'),
+        (FRENCH, 'French'),
+        (GEORGIAN, 'Georgian'),
+        (GERMAN, 'German'),
+        (GREEK, 'Greek (all)'),
+        (HEBREW, 'Hebrew'),
+        (HINDI, 'Hindi'),
+        (HUNGARIAN, 'Hungarian'),
+        (ICELANDIC, 'Icelandic'),
+        (IRISH, 'Irish and Gaelic'),
+        (ITALIAN, 'Italian'),
+        (JAPANESE, 'Japanese'),
+        (KOREAN, 'Korean'),
+        (NORWEGIAN, 'Norwegian'),
+        (POLISH, 'Polish'),
+        (PORTUGUESE, 'Portuguese'),
+        (RUSSIAN, 'Russion'),
+        (SLAVONIC, 'Slavonic (all)'),
+        (SPANISH, 'Spanish'),
+        (SWAHILI, 'Swahili'),
+        (SWEDISH, 'Swedish'),
+        (THAI, 'Thai'),
+        (TURKISH, 'Turkish'),
+        (WELSE, 'Welsh'),
+        (YIDDISH, 'Yiddish'),
+        (UNKNOWN, 'Unknown/Other'),
+    )
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default=UNKNOWN, help_text="Choose a language")
     
     def __str__(self):
-        return '{0} - {1}'.format(self.organization, self.name)
+        return '{0} - {1}'.format(self.composer, self.title)
+        
+    class Meta:
+        ordering = ["composer","title"]
