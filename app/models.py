@@ -120,6 +120,9 @@ class Organization(models.Model):
     def get_absolute_url(self):
         return reverse('organization-detail', args=[str(self.id)])
 
+    class Meta:
+        ordering = ["name"]
+
 # Instance, generally expect one per year
 # Invoke the most recent per organization to fill out the base attributes
 class OrganizationInstance(models.Model):
