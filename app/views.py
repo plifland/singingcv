@@ -5,7 +5,8 @@ from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition
-    
+from .forms import OrganizationInstanceForm
+
 def vocalcv(request):
     # Gets the most recent record per organization
     organizations = Organization.objects.values('id').annotate(maxyear=Max('organizationinstance__year'))
@@ -104,3 +105,54 @@ class OrganizationDetailView(generic.DetailView):
         context['performance'] = Performance.objects.filter(organization = self.organization)
         # And so on for more models
         return context
+
+### Autocomplete views
+from dal import autocomplete
+
+class OrganizationAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        #if not self.request.user.is_authenticated():
+        #    return Country.objects.none()
+
+        qs = Organization.objects.all()
+
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
+class ConductorAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        # Don't forget to filter out results depending on the visitor !
+        #if not self.request.user.is_authenticated():
+        #    return Country.objects.none()
+
+        qs = Conductor.objects.all()
+
+        if self.q:
+            qs = qs.filter(person__lastname__istartswith=self.q)
+
+        return qs
+
+def organizationinstanceform(request):
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = OrganizationInstanceForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            # redirect to a new URL:
+            return HttpResponseRedirect(reverse('home'))
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = OrganizationInstanceForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'sampleform.html', context)

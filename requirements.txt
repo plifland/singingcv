@@ -2,4 +2,5 @@ django >=2.1
 pytz >= 2018.5
 setuptools >= 39.0.1
 django-debug-toolbar==1.10.1
+django-autocomplete-light==3.3.2
 sqlparse==0.2.4
