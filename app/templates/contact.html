@@ -11,17 +11,23 @@
 			<i class="fa fa-map-marker" style="width:30px"></i> New Haven, CT<br>
 		</div>
 		<p class="w3-opacity w3-center"><i>Want to get in touch? Send a mail!</i></p>
+        {% if messages %}
+            {% for message in messages %}
+                <p class="w3-center {% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
 		<div class="w3-row w3-center">
-			<form action="/action_page.php" target="_blank">
+			<form action="" method="post">
+                {% csrf_token %}
 				<div class="w3-row-padding" style="margin:0 -16px 8px -16px">
 				<div class="w3-half">
-					<input class="w3-input w3-border" type="text" placeholder="Your name" required name="Name">
+					<input class="w3-input w3-border" type="text" placeholder="Your name" required name="contact_name">
 				</div>
 				<div class="w3-half">
-					<input class="w3-input w3-border" type="text" placeholder="Your email" required name="Email">
+					<input class="w3-input w3-border" type="text" placeholder="Your email" required name="contact_email">
 				</div>
 				</div>
-				<textarea class="w3-input w3-border" style="height:240px;" cols="256" rows="10" type="text" placeholder="Message" required name="Message"></textarea>
+				<textarea class="w3-input w3-border" style="height:240px;" cols="256" rows="10" type="text" placeholder="Message" required name="content"></textarea>
 				<button class="w3-button w3-black w3-section w3-right" type="submit">SEND</button>
 			</form>
 		</div>
@@ -32,6 +38,5 @@
 		</div>
 	</div>
 </div>
-</div>
-  
+</div>  
 {% endblock %}
