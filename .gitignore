@@ -3,7 +3,7 @@
 ################################################################################
 
 /.config/configstore
-/Django_SingingCV/env
+*settings.py
 *.log
 *.pot
 *.pyc

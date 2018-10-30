@@ -21,7 +21,16 @@ class BootstrapAuthenticationForm(AuthenticationForm):
                                    'class': 'form-control',
                                    'placeholder':'Password'}))
 
+### Contacts page
+class ContactForm(forms.Form):
+    contact_name = forms.CharField(required=True)
+    contact_email = forms.EmailField(required=True)
+    content = forms.CharField(
+        required=True,
+        widget=forms.Textarea
+    )
 
+### Data input
 class OrganizationInstanceForm(forms.ModelForm):
     organization = forms.ModelChoiceField(
         queryset = Organization.objects.all(),

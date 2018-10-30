@@ -3,9 +3,13 @@ import datetime
 from django.db.models import Max,Q
 from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
+from django.core.mail import EmailMessage, send_mail
+from django.shortcuts import redirect
+from django.template.loader import get_template
+from django.contrib import messages
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition
-from .forms import OrganizationInstanceForm
+from .forms import ContactForm, OrganizationInstanceForm
 
 def vocalcv(request):
     # Gets the most recent record per organization
@@ -73,10 +77,33 @@ def bio(request):
     )
 
 def contact(request):
+    form_class = ContactForm
+
+    if request.method == 'POST':
+        form = form_class(data=request.POST)
+
+        if form.is_valid():
+            contact_name = request.POST.get('contact_name', '')
+            contact_email = request.POST.get('contact_email', '')
+            form_content = request.POST.get('content', '')
+
+            # Email the profile with the contact information
+            template = get_template('contact_template.txt')
+            context = {
+                'contact_name': contact_name,
+                'contact_email': contact_email,
+                'form_content': form_content,
+            }
+            content = template.render(context)
+
+            send_mail('Message via peterlifland.com', content, contact_email, ['peter.lifland@gmail.com'], fail_silently=False)
+            messages.success(request, 'Message sent. Thanks for contacting me!')
+            return redirect('contact')
+
     return render(
         request,
         'contact.html',
-        context={},
+        context={'form': form_class},
     )
 
 def view_organizations(request):
