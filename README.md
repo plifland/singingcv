@@ -1,8 +1,6 @@
-# Python Flask app on Azure Web App for Containers
+# SingingCV, built via Django
 
-This is a minimal sample app that demonstrates how to run a Python Flask application on Azure App Service on Linux.
-
-For more information, please see the [Python on App Service quickstart](https://docs.microsoft.com/en-us/azure/app-service/containers/quickstart-python).
+This website serves as my personal promotion page but also as a singing curriculum vitae, keeping a record of what and where I sing. Anyone checking out this repo is welcome to take a look at how I do things - I have a moderately complex SQLIte setup with several different entities and joins - but do be aware that this is my first Django project and almost certainly will not be optimally designed or programmed. Best of luck!
 
 # Contributing
 
