@@ -10,12 +10,12 @@
 		<div class="w3-center w3-margin-bottom" style="padding-right:15px;">
 			<i class="fa fa-map-marker" style="width:30px"></i> New Haven, CT<br>
 		</div>
-		<p class="w3-opacity w3-center"><i>Want to get in touch? Send a mail!</i></p>
         {% if messages %}
             {% for message in messages %}
                 <p class="w3-center {% if message.tags %} {{ message.tags }}{% endif %}">{{ message }}</p>
             {% endfor %}
-        {% endif %}
+        {% else %}
+        <p class="w3-opacity w3-center"><i>Want to get in touch? Send a mail!</i></p>
 		<div class="w3-row w3-center">
 			<form action="" method="post">
                 {% csrf_token %}
@@ -31,6 +31,7 @@
 				<button class="w3-button w3-black w3-section w3-right" type="submit">SEND</button>
 			</form>
 		</div>
+        {% endif %}
 	</div>
 	<div class="w3-col m6">
 		<div class="w3-content w3-center w3-greyscale-min" style="max-width:400px">
