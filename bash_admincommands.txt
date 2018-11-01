@@ -1,0 +1,2 @@
+cd site/wwwroot
+antenv/bin/python3.7 manage.py collectstatic --noinput
