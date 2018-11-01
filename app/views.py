@@ -26,8 +26,6 @@ def vocalcv(request):
     performance_orgs = list(set(performances.values_list('organizations__organization', flat=True)))
     activeorgs = organizationinstances.filter(Q(organization__in=performance_orgs))
     inactiveorgs = organizationinstances.exclude(Q(organization__in=performance_orgs))
-    
-    # Orgs with performances
 
     org_count = Organization.objects.count()
     conductor_count = Conductor.objects.count()
@@ -135,19 +133,28 @@ class OrganizationDetailView(generic.DetailView):
 
 ### Autocomplete views
 from dal import autocomplete
+from django.db import models
+from django.views import View
+from django.http import JsonResponse
 
-class OrganizationAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
-        #if not self.request.user.is_authenticated():
-        #    return Country.objects.none()
+# organization-autocomplete/?q=b
+class OrganizationAutocomplete(generic.View):
+    def get(self, request):
+        orgs = Organization.objects.all()
 
-        qs = Organization.objects.all()
+        q = self.request.GET.get('q')
+        if q:
+            orgs = orgs.filter(name__istartswith=q)
 
-        if self.q:
-            qs = qs.filter(name__istartswith=self.q)
+        orgs = orgs.values('id').annotate(maxyear=Max('organizationinstance__year'))
+        organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in orgs]) & Q(year__in=[o['maxyear'] for o in orgs]))
 
-        return qs
+        results = []
+        for org in organizationinstances:
+            results.append({ 'id':org.organization.pk, 'text':'{name}<br />{city}<br />{conductors}'.format(name = org.organization.name, city = org.organization.city, conductors = ", ".join(s.person.get_full_name() for s in org.conductors.all()) ), 'selected_text':org.organization.name })
+
+        outdict = { 'results':results, 'pagination': {'more':False} }
+        return JsonResponse(outdict)
 
 class ConductorAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):

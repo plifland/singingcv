@@ -34,7 +34,7 @@ class ContactForm(forms.Form):
 class OrganizationInstanceForm(forms.ModelForm):
     organization = forms.ModelChoiceField(
         queryset = Organization.objects.all(),
-        widget = autocomplete.ModelSelect2(url = 'organization-autocomplete')
+        widget = autocomplete.ModelSelect2(url = 'organization-autocomplete', attrs={'data-html': True})
     )
 
     conductors = forms.ModelChoiceField(
