@@ -137,23 +137,44 @@ from django.db import models
 from django.views import View
 from django.http import JsonResponse
 
-# organization-autocomplete/?q=b
+### Self-written autocomplete url - responds to a url with a list of organizations formatted in JSON for the DAL (django autocomplete light) views
+### Example testing url: organization-autocomplete/?q=b
 class OrganizationAutocomplete(generic.View):
     def get(self, request):
+        # Get the base object
         orgs = Organization.objects.all()
 
+        # Filter based on name
         q = self.request.GET.get('q')
         if q:
             orgs = orgs.filter(name__istartswith=q)
 
+        # Organization needs to be crossed with an organizationinstance
+        # This code gets the most recent organizationinstance per organization (post org filtering from above)
         orgs = orgs.values('id').annotate(maxyear=Max('organizationinstance__year'))
         organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in orgs]) & Q(year__in=[o['maxyear'] for o in orgs]))
 
+        # Create the results block, which is a list of JSON objects as follows
+        # Format: [{id, text, selected_text},...]
+        #   id              pk of the object selected
+        #   text            text of the autocomplete suggestion, formatted as html
+        #   selected_text   text of the filled auto-complete (after a selection by the user)
         results = []
         for org in organizationinstances:
-            results.append({ 'id':org.organization.pk, 'text':'{name}<br />{city}<br />{conductors}'.format(name = org.organization.name, city = org.organization.city, conductors = ", ".join(s.person.get_full_name() for s in org.conductors.all()) ), 'selected_text':org.organization.name })
+            results.append({ 
+                'id':org.organization.pk,
+                 'text':'{name} (updated {year})<br />{city}<br />{conductors}'.format(
+                     name = org.organization.name,
+                     year = org.year,
+                     city = org.organization.city,
+                     conductors = ", ".join(s.person.get_full_name() for s in org.conductors.all()),
+                     ),
+                 'selected_text':org.organization.name,
+                 })
 
-        outdict = { 'results':results, 'pagination': {'more':False} }
+        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
+        outdict = { 'results':results, 'pagination':{'more':False} }
+
         return JsonResponse(outdict)
 
 class ConductorAutocomplete(autocomplete.Select2QuerySetView):
