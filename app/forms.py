@@ -4,11 +4,12 @@ Definition of forms.
 
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
+from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from dal import autocomplete
 
-from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance
+from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Genre
 
 class BootstrapAuthenticationForm(AuthenticationForm):
     """Authentication form which uses boostrap CSS."""
@@ -64,4 +65,17 @@ class OrganizationInstanceForm(forms.ModelForm):
 
     class Meta:
         model = OrganizationInstance
+        fields = ('__all__')
+
+class GenreForm(forms.ModelForm):
+    #def clean_subtype(self):
+    #    data = self.cleaned_data['subtype']
+    #    return data
+
+    #def clean_name(self):
+    #    data = self.cleaned_data['name']
+    #    return data
+
+    class Meta:
+        model = Genre
         fields = ('__all__')

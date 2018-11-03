@@ -21,4 +21,5 @@ urlpatterns = [
     re_path(r'^administrator-autocomplete/$', views.AdministratorAutocomplete.as_view(), name='administrator-autocomplete'),
     re_path(r'^singer-autocomplete/$', views.SingerAutocomplete.as_view(), name='singer-autocomplete'),
     path('organizationinstanceform', views.organizationinstanceform, name='organizationinstanceform'),
+    path('genreform', views.genreform, name='genreform'),
 ]

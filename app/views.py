@@ -8,9 +8,11 @@ from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.http import HttpResponse, HttpResponseRedirect
+from django.urls import reverse
 
-from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition
-from .forms import ContactForm, OrganizationInstanceForm
+from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition, Genre
+from .forms import ContactForm, GenreForm, OrganizationInstanceForm
 
 @login_required
 def vocalcv(request):
@@ -291,6 +293,33 @@ def organizationinstanceform(request):
     # If this is a GET (or any other method) create the default form.
     else:
         form = OrganizationInstanceForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'sampleform.html', context)
+
+@login_required
+def genreform(request):
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = GenreForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            entry = Genre.objects.create(
+                subtype=form.cleaned_data['subtype'],
+                name=form.cleaned_data['name'],
+            )
+            entry.save()
+            return HttpResponseRedirect(reverse('genreform'))
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = GenreForm()
 
     context = {
         'form': form

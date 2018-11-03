@@ -184,43 +184,83 @@ class PerformancePiece(models.Model):
         ordering = ["performanceinstance","composition"]
 
 ### Works of music ###
+# Genre tags
+class Genre(models.Model):
+    """ Model representing a piece of music """
+    ERA = 'E'
+    SUBJECT = 'S'
+    FORM = 'F'
+    REGION = 'R'
+    STYLE = 'Y'
+    SUBTYPE_CHOICES = (
+        (ERA, 'Era'),
+        (SUBJECT, 'Subject'),
+        (FORM, 'Form'),
+        (REGION, 'Region'),
+        (STYLE, 'Style'),
+    )
+    subtype = models.CharField(max_length=1, choices=SUBTYPE_CHOICES)
+    name = models.CharField(max_length=50, unique=True)
+    
+    def __str__(self):
+        return '{0}: {1}'.format(self.get_subtype_display(), self.name)
+        
+    class Meta:
+        ordering = ["name"]
+
 # Base class
 class Composition(models.Model):
     """ Model representing a piece of music """
     title = models.CharField(max_length=200, help_text="Enter a piece title")
     composer = models.ForeignKey('Composer', on_delete=models.SET_NULL, null=True)
+    year = models.PositiveIntegerField(blank=True)
 
-    ANTHEM = 'AN'
-    CHANT = 'CH'
-    CLASSICROMANTIC = 'CR'
-    CONTEMPORARY = 'CO'
-    EASTEUROPEAN = 'EE'
-    FOLKSONG = 'FK'
-    HYMN = 'HY'
-    JAZZ = 'JZ'
-    MADRIGAL = 'MA'
-    MASTERWORK = 'MK'
-    POLYPHONY = 'PL'
-    SHAPENOTE = 'SH'
-    SPIRITUAL = 'SP'
-    UNKNOWN = 'U'
-    GENRE_CHOICES = (
-        (ANTHEM, 'Anthem'),
-        (CHANT, 'Chant'),
-        (CLASSICROMANTIC, 'Classical/Romantic'),
-        (CONTEMPORARY, 'Contemporary'),
-        (EASTEUROPEAN, 'East European/Slavonic'),
-        (FOLKSONG, 'Folksong'),
-        (HYMN, 'Hymn'),
-        (JAZZ, 'Jazz'),
-        (MADRIGAL, 'Madrigal/Partsong'),
-        (MASTERWORK, 'Masterwork'),
-        (POLYPHONY, 'Polyphony'),
-        (SHAPENOTE, 'Shapenote'),
-        (SPIRITUAL, 'Gospel/Spiritual'),
-        (UNKNOWN, 'Unknown/Other'),
+    ACAPPELLA = 'AC'
+    PIANO = 'PI'
+    ORGAN = 'OG'
+    PERCUSSION = 'PE'
+    ORCHESTRA = 'OR'
+    BRASS = 'BR'
+    STRINGS = 'ST'
+    CONTINUO = 'BC'
+    BELLS = 'BE'
+    CELLO = 'CE'
+    CLARINET = 'CL'
+    GUITAR = 'GU'
+    TRUMPET = 'TR'
+    VIOLIN = 'VI'
+    WATERGLASS = 'WG'
+    ACCOMPANIMENT_CHOICES = (
+        (ACAPPELLA, 'A cappella'),
+        (PIANO, 'Piano'),
+        (ORGAN, 'Organ'),
+        (PERCUSSION, 'Percussion'),
+        (ORCHESTRA, 'Orchestra'),
+        (BRASS, 'Brass'),
+        (STRINGS, 'Strings'),
+        (CONTINUO, 'Continuo'),
+        (BELLS, 'Bells'),
+        (CELLO, 'Cello'),
+        (CLARINET, 'Clarinet'),
+        (GUITAR, 'Guitar'),
+        (TRUMPET, 'Trumpet'),
+        (VIOLIN, 'Violin'),
+        (WATERGLASS, 'Water Glasses'),
     )
-    genre = models.CharField(max_length=2, choices=GENRE_CHOICES, default=UNKNOWN, help_text="Choose a genre")
+    accompaniment = models.CharField(max_length=2, choices=ACCOMPANIMENT_CHOICES)
+
+    UNISON = 'U'
+    SA = 'SA'
+    SATB = 'MI'
+    TB = 'TB'
+    VOICING_CHOICES = (
+        (UNISON, 'Unison'),
+        (SA, 'SA'),
+        (SATB, 'SATB'),
+        (TB, 'TB'),
+    )
+    voicing = models.CharField(max_length=2, choices=VOICING_CHOICES)
+    tags = models.ManyToManyField(Genre)
     
     AFRIKAANS = 'AF'
     ARABIC = 'AR'
