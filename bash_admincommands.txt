@@ -1,2 +1,5 @@
-cd site/wwwroot
-antenv/bin/python3.7 manage.py collectstatic --noinput
+Steps - open the ssh prompt (under development tools on main azure app page), then do 1 and 2a
+
+(1) cd site/wwwroot
+(2a) antenv/bin/python manage.py collectstatic --noinput
+(2b) antenv/bin/python manage.py collectstatic --noinput --clear

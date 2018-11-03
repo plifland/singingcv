@@ -7,14 +7,16 @@ from django.core.mail import EmailMessage, send_mail
 from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition
 from .forms import ContactForm, OrganizationInstanceForm
 
+@login_required
 def vocalcv(request):
     # Gets the most recent record per organization
-    organizations = Organization.objects.values('id').annotate(maxyear=Max('organizationinstance__year'))
-    organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in organizations]) & Q(year__in=[o['maxyear'] for o in organizations]))
+    organizations = Organization.objects.values('id').annotate(maxdate=Max('organizationinstance__start'))
+    organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in organizations]) & Q(start__in=[o['maxdate'] for o in organizations]))
 
     # Let's add a filter for upcoming performances
     performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today())
@@ -71,6 +73,13 @@ def bio(request):
     return render(
         request,
         'bio.html',
+        context={},
+    )
+
+def links(request):
+    return render(
+        request,
+        'links.html',
         context={},
     )
 
@@ -141,6 +150,9 @@ from django.http import JsonResponse
 ### Example testing url: organization-autocomplete/?q=b
 class OrganizationAutocomplete(generic.View):
     def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Organization.objects.none()
+
         # Get the base object
         orgs = Organization.objects.all()
 
@@ -151,8 +163,8 @@ class OrganizationAutocomplete(generic.View):
 
         # Organization needs to be crossed with an organizationinstance
         # This code gets the most recent organizationinstance per organization (post org filtering from above)
-        orgs = orgs.values('id').annotate(maxyear=Max('organizationinstance__year'))
-        organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in orgs]) & Q(year__in=[o['maxyear'] for o in orgs]))
+        orgs = orgs.values('id').annotate(maxyear=Max('organizationinstance__start'))
+        organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in orgs]) & Q(start__in=[o['maxyear'] for o in orgs]))
 
         # Create the results block, which is a list of JSON objects as follows
         # Format: [{id, text, selected_text},...]
@@ -165,7 +177,7 @@ class OrganizationAutocomplete(generic.View):
                 'id':org.organization.pk,
                  'text':'{name} (updated {year})<br />{city}<br />{conductors}'.format(
                      name = org.organization.name,
-                     year = org.year,
+                     year = "{0:%b %Y}".format(org.end),
                      city = org.organization.city,
                      conductors = ", ".join(s.person.get_full_name() for s in org.conductors.all()),
                      ),
@@ -177,19 +189,93 @@ class OrganizationAutocomplete(generic.View):
 
         return JsonResponse(outdict)
 
-class ConductorAutocomplete(autocomplete.Select2QuerySetView):
-    def get_queryset(self):
-        # Don't forget to filter out results depending on the visitor !
-        #if not self.request.user.is_authenticated():
-        #    return Country.objects.none()
+class AdministratorAutocomplete(generic.View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Administrator.objects.none()
 
-        qs = Conductor.objects.all()
+        admins = Administrator.objects.all()
 
-        if self.q:
-            qs = qs.filter(person__lastname__istartswith=self.q)
+        q = self.request.GET.get('q')
+        if q:
+            admins = admins.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
 
-        return qs
+        results = []
+        for admin in admins:
+            results.append({
+                'id':admin.pk,
+                 'text':'{name}'.format(
+                     name = admin.person.get_full_name(),
+                     ),
+                 'selected_text':'{name}'.format(
+                     name = admin.person.get_full_name(),
+                     ),
+                 })
 
+        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
+        outdict = { 'results':results, 'pagination':{'more':False} }
+
+        return JsonResponse(outdict)
+
+class ConductorAutocomplete(generic.View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Conductor.objects.none()
+
+        admins = Conductor.objects.all()
+
+        q = self.request.GET.get('q')
+        if q:
+            admins = admins.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
+
+        results = []
+        for admin in admins:
+            results.append({
+                'id':admin.pk,
+                 'text':'{name}'.format(
+                     name = admin.person.get_full_name(),
+                     ),
+                 'selected_text':'{name}'.format(
+                     name = admin.person.get_full_name(),
+                     ),
+                 })
+
+        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
+        outdict = { 'results':results, 'pagination':{'more':False} }
+
+        return JsonResponse(outdict)
+
+class SingerAutocomplete(generic.View):
+    def get(self, request):
+        if not request.user.is_authenticated:
+            return Singer.objects.none()
+
+        singers = Singer.objects.all()
+
+        q = self.request.GET.get('q')
+        if q:
+            singers = singers.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
+
+        results = []
+        for singer in singers:
+            results.append({
+                'id':singer.pk,
+                 'text':'{name} ({voicepart})'.format(
+                     name = singer.person.get_full_name(),
+                     voicepart = singer.get_voicepart_display(),
+                     ),
+                 'selected_text':'{name} ({voicepart})'.format(
+                     name = singer.person.get_full_name(),
+                     voicepart = singer.get_voicepart_display(),
+                     ),
+                 })
+
+        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
+        outdict = { 'results':results, 'pagination':{'more':False} }
+
+        return JsonResponse(outdict)
+
+@login_required
 def organizationinstanceform(request):
     # If this is a POST request then process the Form data
     if request.method == 'POST':

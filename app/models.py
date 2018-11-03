@@ -127,7 +127,8 @@ class Organization(models.Model):
 # Invoke the most recent per organization to fill out the base attributes
 class OrganizationInstance(models.Model):
     organization = models.ForeignKey('Organization', on_delete=models.SET_NULL, null=True)
-    year = models.SmallIntegerField(null=False, blank=False)
+    start = models.DateField()
+    end = models.DateField(null=True, blank=True)
     conductors = models.ManyToManyField(Conductor, related_name='conductor_primary', help_text='Primary conductor(s)', blank=True)
     associateconductors = models.ManyToManyField(Conductor, related_name='conductor_associate', help_text='Associate and assistant conductor(s)', blank=True)
     administrators = models.ManyToManyField(Administrator, help_text='Administrators and managers', blank=True)
@@ -136,10 +137,10 @@ class OrganizationInstance(models.Model):
     
     def __str__(self):
         conductors_str = ", ".join(s.person.lastname for s in self.conductors.all())
-        return '{0} {1}-{2} ({3})'.format(self.organization, self.year - 1, self.year, conductors_str)
+        return '{0} {1:%b %Y}-{2:%b %Y} ({3})'.format(self.organization, self.start, self.end, conductors_str)
         
     class Meta:
-        ordering = ["organization","-year"]
+        ordering = ["organization","-end"]
 
 
 ### Peformances and recordings ###
@@ -201,6 +202,7 @@ class Composition(models.Model):
     MASTERWORK = 'MK'
     POLYPHONY = 'PL'
     SHAPENOTE = 'SH'
+    SPIRITUAL = 'SP'
     UNKNOWN = 'U'
     GENRE_CHOICES = (
         (ANTHEM, 'Anthem'),
@@ -215,6 +217,7 @@ class Composition(models.Model):
         (MASTERWORK, 'Masterwork'),
         (POLYPHONY, 'Polyphony'),
         (SHAPENOTE, 'Shapenote'),
+        (SPIRITUAL, 'Gospel/Spiritual'),
         (UNKNOWN, 'Unknown/Other'),
     )
     genre = models.CharField(max_length=2, choices=GENRE_CHOICES, default=UNKNOWN, help_text="Choose a genre")

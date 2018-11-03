@@ -42,6 +42,26 @@ class OrganizationInstanceForm(forms.ModelForm):
         widget = autocomplete.ModelSelect2Multiple(url = 'conductor-autocomplete')
     )
 
+    associateconductors = forms.ModelChoiceField(
+        queryset = Conductor.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'conductor-autocomplete')
+    )
+
+    administrators = forms.ModelChoiceField(
+        queryset = Conductor.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'administrator-autocomplete', attrs={'data-html': True})
+    )
+
+    singerspaid = forms.ModelChoiceField(
+        queryset = Singer.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
+    )
+
+    singersvolunteer = forms.ModelChoiceField(
+        queryset = Singer.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
+    )
+
     class Meta:
         model = OrganizationInstance
         fields = ('__all__')
