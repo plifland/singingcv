@@ -6,6 +6,8 @@ from django import forms
 from django.contrib.auth.forms import AuthenticationForm
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.admin import site as admin_site
+from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 
 from dal import autocomplete
 
@@ -63,6 +65,39 @@ class OrganizationInstanceForm(forms.ModelForm):
         widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['organization'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['organization'].widget, 
+               self.instance._meta.get_field('organization').remote_field,            
+               admin_site,
+           )
+        self.fields['conductors'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['conductors'].widget, 
+               self.instance._meta.get_field('conductors').remote_field,            
+               admin_site,
+           )
+        self.fields['associateconductors'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['associateconductors'].widget, 
+               self.instance._meta.get_field('associateconductors').remote_field,            
+               admin_site,
+           )
+        self.fields['administrators'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['administrators'].widget, 
+               self.instance._meta.get_field('administrators').remote_field,            
+               admin_site,
+           )
+        self.fields['singerspaid'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['singerspaid'].widget, 
+               self.instance._meta.get_field('singerspaid').remote_field,            
+               admin_site,
+           )
+        self.fields['singersvolunteer'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['singersvolunteer'].widget, 
+               self.instance._meta.get_field('singersvolunteer').remote_field,            
+               admin_site,
+           )
+
     class Meta:
         model = OrganizationInstance
         fields = ('__all__')
@@ -78,15 +113,36 @@ class CompositionForm(forms.ModelForm):
         widget = autocomplete.ModelSelect2Multiple(url = 'genre-autocomplete', attrs={'data-html': True}),
     )
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['composer'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['composer'].widget, 
+               self.instance._meta.get_field('composer').remote_field,            
+               admin_site,
+           )
+        self.fields['tags'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['tags'].widget, 
+               self.instance._meta.get_field('tags').remote_field,            
+               admin_site,
+           )
+
     class Meta:
         model = Composition
-        fields = ('__all__')
+        fields = ('__all__')    
 
 class ComposerForm(forms.ModelForm):
     person = forms.ModelChoiceField(
         queryset = Person.objects.all(),
         widget = autocomplete.ModelSelect2(url = 'person-autocomplete', attrs={'data-html': True, 'data-minimum-input-length': 2, })
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['person'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['person'].widget, 
+               self.instance._meta.get_field('person').remote_field,            
+               admin_site,
+           )
 
     class Meta:
         model = Composer
