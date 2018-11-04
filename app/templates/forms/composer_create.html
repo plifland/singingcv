@@ -1,0 +1,22 @@
+{% extends 'base_generic.html' %}
+
+{% block extraheaders %}
+{% load static %}
+<script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<!--<link href="{% static 'autocomplete_light/vendor/select2/dist/css/select2.css' %}" type="text/css" media="all" rel="stylesheet" />-->
+<link href="{% static 'autocomplete_light/select2.css' %}" type="text/css" media="all" rel="stylesheet" />
+<script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
+<script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
+{{ form.media }}
+{% endblock %}
+
+{% block content %}
+<div class="w3-row w3-padding-32" style="margin-top:100px;">
+    <h2>Composer</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" />
+    </form>
+</div>
+{% endblock %}

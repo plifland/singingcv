@@ -9,7 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from dal import autocomplete
 
-from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Genre
+from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Genre, Composition
 
 class BootstrapAuthenticationForm(AuthenticationForm):
     """Authentication form which uses boostrap CSS."""
@@ -38,33 +38,58 @@ class OrganizationInstanceForm(forms.ModelForm):
         widget = autocomplete.ModelSelect2(url = 'organization-autocomplete', attrs={'data-html': True})
     )
 
-    conductors = forms.ModelChoiceField(
+    conductors = forms.ModelMultipleChoiceField(
         queryset = Conductor.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'conductor-autocomplete')
     )
 
-    associateconductors = forms.ModelChoiceField(
+    associateconductors = forms.ModelMultipleChoiceField(
         queryset = Conductor.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'conductor-autocomplete')
     )
 
-    administrators = forms.ModelChoiceField(
+    administrators = forms.ModelMultipleChoiceField(
         queryset = Conductor.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'administrator-autocomplete', attrs={'data-html': True})
     )
 
-    singerspaid = forms.ModelChoiceField(
+    singerspaid = forms.ModelMultipleChoiceField(
         queryset = Singer.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
     )
 
-    singersvolunteer = forms.ModelChoiceField(
+    singersvolunteer = forms.ModelMultipleChoiceField(
         queryset = Singer.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
     )
 
     class Meta:
         model = OrganizationInstance
+        fields = ('__all__')
+
+class CompositionForm(forms.ModelForm):
+    composer = forms.ModelChoiceField(
+        queryset = Composer.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
+    )
+
+    tags = forms.ModelMultipleChoiceField(
+        queryset = Genre.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'genre-autocomplete', attrs={'data-html': True}),
+    )
+
+    class Meta:
+        model = Composition
+        fields = ('__all__')
+
+class ComposerForm(forms.ModelForm):
+    person = forms.ModelChoiceField(
+        queryset = Person.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'person-autocomplete', attrs={'data-html': True, 'data-minimum-input-length': 2, })
+    )
+
+    class Meta:
+        model = Composer
         fields = ('__all__')
 
 class GenreForm(forms.ModelForm):

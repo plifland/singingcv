@@ -20,7 +20,7 @@ class Person(models.Model):
 
 # Roles
 class Administrator(models.Model):
-    person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
+    person = models.OneToOneField('Person', on_delete=models.CASCADE)
     
     def __str__(self):
         return str(self.person)
@@ -29,7 +29,7 @@ class Administrator(models.Model):
         ordering = ["person"]
 
 class Composer(models.Model):
-    person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
+    person = models.OneToOneField('Person', on_delete=models.CASCADE)
     
     def __str__(self):
         return str(self.person)
@@ -38,7 +38,7 @@ class Composer(models.Model):
         ordering = ["person"]
         
 class Conductor(models.Model):
-    person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
+    person = models.OneToOneField('Person', on_delete=models.CASCADE)
     
     def __str__(self):
         return str(self.person)
@@ -47,7 +47,7 @@ class Conductor(models.Model):
         ordering = ["person"]
 
 class Singer(models.Model):
-    person = models.ForeignKey('Person', on_delete=models.SET_NULL, null=True)
+    person = models.ForeignKey('Person', on_delete=models.CASCADE)
 
     SOPRANO = 'S'
     MEZZO = 'M'
@@ -206,12 +206,12 @@ class Genre(models.Model):
         return '{0}: {1}'.format(self.get_subtype_display(), self.name)
         
     class Meta:
-        ordering = ["name"]
+        ordering = ["subtype","name"]
 
 # Base class
 class Composition(models.Model):
     """ Model representing a piece of music """
-    title = models.CharField(max_length=200, help_text="Enter a piece title")
+    title = models.CharField(max_length=200)
     composer = models.ForeignKey('Composer', on_delete=models.SET_NULL, null=True)
     year = models.PositiveIntegerField(blank=True)
 
@@ -247,7 +247,7 @@ class Composition(models.Model):
         (VIOLIN, 'Violin'),
         (WATERGLASS, 'Water Glasses'),
     )
-    accompaniment = models.CharField(max_length=2, choices=ACCOMPANIMENT_CHOICES)
+    accompaniment = models.CharField(max_length=2, choices=ACCOMPANIMENT_CHOICES, default=ACAPPELLA)
 
     UNISON = 'U'
     SA = 'SA'
@@ -259,7 +259,7 @@ class Composition(models.Model):
         (SATB, 'SATB'),
         (TB, 'TB'),
     )
-    voicing = models.CharField(max_length=2, choices=VOICING_CHOICES)
+    voicing = models.CharField(max_length=2, choices=VOICING_CHOICES, default=SATB)
     tags = models.ManyToManyField(Genre)
     
     AFRIKAANS = 'AF'
@@ -334,7 +334,7 @@ class Composition(models.Model):
         (YIDDISH, 'Yiddish'),
         (UNKNOWN, 'Unknown/Other'),
     )
-    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default=UNKNOWN, help_text="Choose a language")
+    language = models.CharField(max_length=2, choices=LANGUAGE_CHOICES, default=ENGLISH)
     
     def __str__(self):
         return '{0} - {1}'.format(self.composer, self.title)

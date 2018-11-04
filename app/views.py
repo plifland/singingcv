@@ -10,9 +10,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.core.paginator import Paginator
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition, Genre
-from .forms import ContactForm, GenreForm, OrganizationInstanceForm
+from .forms import ContactForm, GenreForm, OrganizationInstanceForm, CompositionForm, ComposerForm
 
 @login_required
 def vocalcv(request):
@@ -191,92 +192,153 @@ class OrganizationAutocomplete(generic.View):
 
         return JsonResponse(outdict)
 
-class AdministratorAutocomplete(generic.View):
+class PersonAutocomplete(generic.View):
     def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Person.objects.none()
+
+        persons = Person.objects.all()
+
+        q = self.request.GET.get('q')
+        if q:
+            persons = persons.filter(Q(lastname__istartswith=q) | Q(firstname__istartswith=q))
+
+        results = []
+        for p in persons:
+            singer = Singer.objects.filter(person=p.pk)
+            if singer:
+                singertext = "<br />Singer ({0})".format(", ".join(s.get_voicepart_display() for s in singer))
+            else:
+                singertext = ""
+
+            composer = Composer.objects.filter(person=p.pk)
+            if composer:
+                composertext = "<br />Composer"
+            else:
+                composertext = ""
+
+            try:
+                conductor = Conductor.objects.get(person=p.pk)
+            except Conductor.DoesNotExist:
+                conductor = None
+            if conductor:
+                orgs = OrganizationInstance.objects.filter(Q(conductors = conductor.pk) | Q(associateconductors = conductor.pk))
+                if orgs:
+                    orgs = list(set(orgs.values_list('organization__name', flat=True)))[:3]
+                    conductortext = "<br />Conductor ({0})".format(", ".join(o for o in orgs))
+                else:
+                    conductortext = "<br />Conductor"
+            else:
+                conductortext = ""
+
+            try:
+                admin = Administrator.objects.get(person=p.pk)
+            except Administrator.DoesNotExist:
+                admin = None
+            if admin:
+                orgs = OrganizationInstance.objects.filter(administrators = admin.pk)
+                if orgs:
+                    orgs = list(set(orgs.values_list('organization__name', flat=True)))[:3]
+                    admintext = "<br />Administrator ({0})".format(", ".join(o for o in orgs))
+                else:
+                    admintext = "<br />Administrator"
+            else:
+                admintext = ""
+
+            results.append({
+                'id':p.pk,
+                 'text':'{name}{singer}{conductor}{administrator}{composer}'.format(
+                     name = p.get_full_name(),
+                     singer = singertext,
+                     conductor = conductortext,
+                     administrator = admintext,
+                     composer = composertext,
+                     ),
+                 'selected_text':'{name}'.format(
+                     name = p.get_full_name(),
+                     ),
+                 })
+
+
+        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
+        outdict = { 'results':results, 'pagination':{'more':False} }
+
+        return JsonResponse(outdict)
+
+class AdministratorAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return item.person.get_full_name()
+
+    def get_queryset(self):
         if not self.request.user.is_authenticated:
             return Administrator.objects.none()
 
-        admins = Administrator.objects.all()
+        qs = Administrator.objects.all()
 
-        q = self.request.GET.get('q')
-        if q:
-            admins = admins.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
+        if self.q:
+            qs = qs.filter(Q(person__lastname__istartswith=self.q) | Q(person__firstname__istartswith=self.q))
 
-        results = []
-        for admin in admins:
-            results.append({
-                'id':admin.pk,
-                 'text':'{name}'.format(
-                     name = admin.person.get_full_name(),
-                     ),
-                 'selected_text':'{name}'.format(
-                     name = admin.person.get_full_name(),
-                     ),
-                 })
+        return qs
+class ComposerAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return item.person.get_full_name()
 
-        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
-        outdict = { 'results':results, 'pagination':{'more':False} }
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Composer.objects.none()
 
-        return JsonResponse(outdict)
+        qs = Composer.objects.all()
 
-class ConductorAutocomplete(generic.View):
-    def get(self, request):
+        if self.q:
+            qs = qs.filter(Q(person__lastname__istartswith=self.q) | Q(person__firstname__istartswith=self.q))
+
+        return qs
+class ConductorAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return item.person.get_full_name()
+
+    def get_queryset(self):
         if not self.request.user.is_authenticated:
             return Conductor.objects.none()
 
-        admins = Conductor.objects.all()
+        qs = Conductor.objects.all()
 
-        q = self.request.GET.get('q')
-        if q:
-            admins = admins.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
+        if self.q:
+            qs = qs.filter(Q(person__lastname__istartswith=self.q) | Q(person__firstname__istartswith=self.q))
 
-        results = []
-        for admin in admins:
-            results.append({
-                'id':admin.pk,
-                 'text':'{name}'.format(
-                     name = admin.person.get_full_name(),
-                     ),
-                 'selected_text':'{name}'.format(
-                     name = admin.person.get_full_name(),
-                     ),
-                 })
+        return qs
+class SingerAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return '{name} ({voicepart})'.format(
+            name = item.person.get_full_name(),
+            voicepart = item.get_voicepart_display(),
+            )
 
-        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
-        outdict = { 'results':results, 'pagination':{'more':False} }
-
-        return JsonResponse(outdict)
-
-class SingerAutocomplete(generic.View):
-    def get(self, request):
-        if not request.user.is_authenticated:
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
             return Singer.objects.none()
 
-        singers = Singer.objects.all()
+        qs = Singer.objects.all()
 
-        q = self.request.GET.get('q')
-        if q:
-            singers = singers.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
+        if self.q:
+            qs = qs.filter(Q(person__lastname__istartswith=self.q) | Q(person__firstname__istartswith=self.q))
 
-        results = []
-        for singer in singers:
-            results.append({
-                'id':singer.pk,
-                 'text':'{name} ({voicepart})'.format(
-                     name = singer.person.get_full_name(),
-                     voicepart = singer.get_voicepart_display(),
-                     ),
-                 'selected_text':'{name} ({voicepart})'.format(
-                     name = singer.person.get_full_name(),
-                     voicepart = singer.get_voicepart_display(),
-                     ),
-                 })
+        return qs
 
-        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
-        outdict = { 'results':results, 'pagination':{'more':False} }
+class GenreAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Genre.objects.none()
 
-        return JsonResponse(outdict)
+        qs = Genre.objects.all()
 
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+
+
+### Forms
 @login_required
 def organizationinstanceform(request):
     # If this is a POST request then process the Form data
@@ -299,6 +361,64 @@ def organizationinstanceform(request):
     }
 
     return render(request, 'sampleform.html', context)
+
+@login_required
+def compositionform(request):
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = CompositionForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            entry = Composition.objects.create(
+                title=form.cleaned_data['title'],
+                composer=form.cleaned_data['composer'],
+                year=form.cleaned_data['year'],
+                accompaniment=form.cleaned_data['accompaniment'],
+                voicing=form.cleaned_data['voicing'],
+                tags=form.cleaned_data['tags'],
+                language=form.cleaned_data['language'],
+            )
+            entry.save()
+            return HttpResponseRedirect(reverse('compositionform'))
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = CompositionForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'sampleform.html', context)
+
+@login_required
+def composerform(request):
+    # If this is a POST request then process the Form data
+    if request.method == 'POST':
+
+        # Create a form instance and populate it with data from the request (binding):
+        form = ComposerForm(request.POST)
+
+        # Check if the form is valid:
+        if form.is_valid():
+            entry = Composer.objects.create(
+                person=form.cleaned_data['person'],
+            )
+            entry.save()
+            return HttpResponseRedirect(reverse('composerform'))
+
+    # If this is a GET (or any other method) create the default form.
+    else:
+        form = ComposerForm()
+
+    context = {
+        'form': form
+    }
+
+    return render(request, 'forms/composer_create.html', context)
 
 @login_required
 def genreform(request):

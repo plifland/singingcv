@@ -4,7 +4,11 @@
 <div class="w3-row" style="padding-top:64px;padding-left:128px;">
 <ul>
     <li><a href="{% url 'organizationinstanceform' %}">organizationinstanceform</a></li>
+    <li><a href="{% url 'compositionform' %}">Create additional compositions</a></li>
+    <li><a href="{% url 'composerform' %}">Create additional composers</a></li>
     <li><a href="{% url 'genreform' %}">Create additional genres</a></li>
+    <li><a href="{% url 'person-autocomplete' %}">Person Autocomplete (all)</a></li>
+    <li><a href="{% url 'person-autocomplete' %}?q=P">Person Autocomplete (P)</a></li>
 </ul>
 </div>
 {% endblock %}
