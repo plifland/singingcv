@@ -191,6 +191,33 @@ class OrganizationAutocomplete(generic.View):
         outdict = { 'results':results, 'pagination':{'more':False} }
 
         return JsonResponse(outdict)
+class OrganizationInstanceAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return '{name}<br />{start} - {end}'.format(
+            name = item.organization.name,
+            start = item.start,
+            end = item.end,
+            )
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return OrganizationInstance.objects.none()
+
+        qs = OrganizationInstance.objects.all()
+
+        # Fetch an performance to filter with, if we can
+        perfinst = self.forwarded.get('performanceinstance', None)
+
+        # organizationinstance-autocomplete/?performanceinstance=2
+        if perfinst:
+            performance = PerformanceInstance.objects.filter(performance = perfinst)
+            if performance:
+                qs = qs.filter(id__in = [o.id for o in performance.first().organizations.all()])
+
+        if self.q:
+            qs = qs.filter(organization__name__contains=self.q)
+
+        return qs
 
 class PersonAutocomplete(generic.View):
     def get(self, request):
@@ -334,6 +361,43 @@ class GenreAutocomplete(autocomplete.Select2QuerySetView):
 
         if self.q:
             qs = qs.filter(name__istartswith=self.q)
+
+        return qs
+class CompositionAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return '{title} ({voicing})<br />{composer} - {year}'.format(
+            title = item.title,
+            composer = item.composer,
+            year = item.year,
+            voicing = item.get_voicing_display(),
+            )
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return Composition.objects.none()
+
+        qs = Composition.objects.all()
+
+        if self.q:
+            qs = qs.filter(title__contains=self.q)
+
+        return qs
+class PerformanceInstanceAutocomplete(autocomplete.Select2QuerySetView):
+    def get_result_label(self, item):
+        return '{title}<br />{orgs}<br />{date}'.format(
+            title = item.performance.name,
+            orgs = ", ".join(s.organization.name for s in item.organizations.all()),
+            date = item.date,
+            )
+
+    def get_queryset(self):
+        if not self.request.user.is_authenticated:
+            return PerformanceInstance.objects.none()
+
+        qs = PerformanceInstance.objects.all()
+
+        if self.q:
+            qs = qs.filter(performance__name__contains=self.q)
 
         return qs
 

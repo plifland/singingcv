@@ -11,7 +11,7 @@ from django.contrib.admin.widgets import RelatedFieldWidgetWrapper
 
 from dal import autocomplete
 
-from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Genre, Composition
+from .models import *
 
 class BootstrapAuthenticationForm(AuthenticationForm):
     """Authentication form which uses boostrap CSS."""
@@ -159,4 +159,44 @@ class GenreForm(forms.ModelForm):
 
     class Meta:
         model = Genre
+        fields = ('__all__')
+
+class PerformancePieceForm(forms.ModelForm):
+    performanceinstance = forms.ModelChoiceField(
+        queryset = PerformanceInstance.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'performanceinstance-autocomplete', attrs={'data-html': True}),
+    )
+
+    organizations = forms.ModelMultipleChoiceField(
+        queryset = OrganizationInstance.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'organizationinstance-autocomplete',
+                                                   forward=['performanceinstance'],
+                                                   attrs={'data-html': True},),
+    )
+
+    composition = forms.ModelChoiceField(
+        queryset = Composition.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'composition-autocomplete', attrs={'data-html': True}),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['performanceinstance'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['performanceinstance'].widget, 
+               self.instance._meta.get_field('performanceinstance').remote_field,            
+               admin_site,
+           )
+        self.fields['organizations'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['organizations'].widget, 
+               self.instance._meta.get_field('organizations').remote_field,            
+               admin_site,
+           )
+        self.fields['composition'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['composition'].widget, 
+               self.instance._meta.get_field('composition').remote_field,            
+               admin_site,
+           )
+
+    class Meta:
+        model = Composition
         fields = ('__all__')

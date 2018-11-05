@@ -174,11 +174,11 @@ class PerformanceInstance(models.Model):
 
 class PerformancePiece(models.Model):
     performanceinstance = models.ForeignKey('PerformanceInstance', on_delete=models.SET_NULL, null=True)
-    organizations = models.ManyToManyField(Organization, help_text='Organization(s)')
+    organizations = models.ManyToManyField(OrganizationInstance, help_text='Organization(s)')
     composition = models.ForeignKey('Composition', on_delete=models.SET_NULL, null=True)
     
     def __str__(self):
-        return '{0} - {1}'.format(self.composition.name, self.performanceinstance.performance.name)
+        return '{0} - {1}'.format(self.composition.title, self.performanceinstance.performance.name)
         
     class Meta:
         ordering = ["performanceinstance","composition"]

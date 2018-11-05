@@ -23,6 +23,9 @@ urlpatterns = [
     re_path(r'^conductor-autocomplete/$', views.ConductorAutocomplete.as_view(), name='conductor-autocomplete'),
     re_path(r'^singer-autocomplete/$', views.SingerAutocomplete.as_view(), name='singer-autocomplete'),
     re_path(r'^genre-autocomplete/$', views.GenreAutocomplete.as_view(), name='genre-autocomplete'),
+    re_path(r'^composition-autocomplete/$', views.CompositionAutocomplete.as_view(), name='composition-autocomplete'),
+    re_path(r'^performanceinstance-autocomplete/$', views.PerformanceInstanceAutocomplete.as_view(), name='performanceinstance-autocomplete'),
+    re_path(r'^organizationinstance-autocomplete/$', views.OrganizationInstanceAutocomplete.as_view(), name='organizationinstance-autocomplete'),
 
     path('organizationinstanceform', views.organizationinstanceform, name='organizationinstanceform'),
     path('compositionform', views.compositionform, name='compositionform'),
