@@ -1,0 +1,13 @@
+﻿<div>
+    <table>
+    {% for org, perf_p in pieces.items %}
+        <tr><td colspan="2" style="padding-top:10px; padding-bottom:10px; color:white; font-size:140%;">{{ org }}</td></tr>
+        {% for pk,p in perf_p.items %}
+        <tr>
+            <td style="padding-left:15px; padding-right:10px; padding-bottom:10px; color:white; margin-bottom:10px; width:50px;">{{ p.composition.composer.person.lastname }}</td>
+            <td style="padding-bottom:10px; color:white;">{{ p.composition.title }}</td>
+        </tr>
+        {% endfor %}
+    {% endfor %}
+    </table>
+</div>

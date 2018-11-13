@@ -123,6 +123,62 @@ def view_organizations(request):
         context={},
     )   
 
+class Performances(generic.View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Performance.objects.none()
+
+        # Gets the most recent record per organization
+        #performances = Performance.objects.all()
+        performanceinstances = PerformanceInstance.objects.all()
+    
+        return render(
+            request,
+            'performances.html',
+            context={'performanceinstances':performanceinstances},
+        )
+
+def performance_detail(request, pk):
+    performance = Performance.objects.get(pk=pk)
+    performanceinstances = PerformanceInstance.objects.filter(performance=pk)
+    return render(
+        request,
+        'performancedetails.html',
+        {'performance':performance, 'performanceinstances':performanceinstances},
+    )
+
+def performance_pieces(request, pk):
+    pieces = PerformancePiece.objects.filter(performanceinstance=pk)
+
+    pieces_grouped = {}
+    for p in pieces:
+        for oi in p.organizations.all():
+            if not oi.organization.name in pieces_grouped:
+                pieces_grouped[oi.organization.name] = {}
+            pieces_grouped[oi.organization.name][p.composition.pk] = p
+
+    return render(
+        request,
+        'performancepieces.html',
+        {'pieces':pieces_grouped},
+    )
+
+def performance_pieces_all(request, pk):
+    pieces = PerformancePiece.objects.filter(performanceinstance__performance=pk)
+
+    pieces_grouped = {}
+    for p in pieces:
+        for oi in p.organizations.all():
+            if not oi.organization.name in pieces_grouped:
+                pieces_grouped[oi.organization.name] = {}
+            pieces_grouped[oi.organization.name][p.composition.pk] = p
+
+    return render(
+        request,
+        'performancepieces.html',
+        {'pieces':pieces_grouped},
+    )
+
 class OrganizationListView(generic.ListView):
     model = Organization
     template_name = 'orglist.html'
@@ -186,6 +242,16 @@ class OrganizationAutocomplete(generic.View):
                      ),
                  'selected_text':org.organization.name,
                  })
+
+        # Add on orgs that have no instance
+        orgs = Organization.objects.filter(organizationinstance__isnull=True)
+        for org in orgs:
+            results.append({
+                'id':org.pk,
+                'text':org.name,
+                'selected_text':org.name,
+
+                })
 
         # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
         outdict = { 'results':results, 'pagination':{'more':False} }

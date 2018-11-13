@@ -41,26 +41,31 @@ class OrganizationInstanceForm(forms.ModelForm):
     )
 
     conductors = forms.ModelMultipleChoiceField(
+        required=False,
         queryset = Conductor.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'conductor-autocomplete')
     )
 
     associateconductors = forms.ModelMultipleChoiceField(
+        required=False,
         queryset = Conductor.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'conductor-autocomplete')
     )
 
     administrators = forms.ModelMultipleChoiceField(
-        queryset = Conductor.objects.all(),
+        required=False,
+        queryset = Administrator.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'administrator-autocomplete', attrs={'data-html': True})
     )
 
     singerspaid = forms.ModelMultipleChoiceField(
+        required=False,
         queryset = Singer.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
     )
 
     singersvolunteer = forms.ModelMultipleChoiceField(
+        required=False,
         queryset = Singer.objects.all(),
         widget = autocomplete.ModelSelect2Multiple(url = 'singer-autocomplete', attrs={'data-html': True})
     )
@@ -104,6 +109,12 @@ class OrganizationInstanceForm(forms.ModelForm):
 
 class CompositionForm(forms.ModelForm):
     composer = forms.ModelChoiceField(
+        queryset = Composer.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
+    )
+
+    arranger = forms.ModelChoiceField(
+        required=False,
         queryset = Composer.objects.all(),
         widget = autocomplete.ModelSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
     )

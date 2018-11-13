@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse #Used to generate URLs by reversing the URL patterns
 import uuid # Required for unique instances
+from django.utils import timezone
 
 ### People ###
 # Base class
@@ -150,9 +151,11 @@ class Performance(models.Model):
     
     PERFORMANCE = 'P'
     RECORDING = 'R'
+    SERVICE = 'S'
     TYPE_CHOICES = (
         (PERFORMANCE, 'Performance'),
         (RECORDING, 'Recording'),
+        (SERVICE, 'Service'),
     )
     type = models.CharField(max_length=2, choices=TYPE_CHOICES, default=PERFORMANCE, help_text="Choose a performance type")
     
@@ -168,6 +171,13 @@ class PerformanceInstance(models.Model):
     
     def __str__(self):
         return '{0} - {1} - {2}'.format(self.performance.name, self.date, self.venue)
+
+    def was_this_year(self):
+        now = timezone.now()
+        if now.year ==  self.date.year:
+            return True
+        else:
+            return False
         
     class Meta:
         ordering = ["-date","city","venue"]
@@ -212,7 +222,8 @@ class Genre(models.Model):
 class Composition(models.Model):
     """ Model representing a piece of music """
     title = models.CharField(max_length=200)
-    composer = models.ForeignKey('Composer', on_delete=models.SET_NULL, null=True)
+    composer = models.ForeignKey('Composer', related_name='composer', on_delete=models.SET_NULL, null=True)
+    arranger = models.ForeignKey('Composer', related_name='arranger', on_delete=models.SET_NULL, null=True)
     year = models.PositiveIntegerField(blank=True)
 
     ACAPPELLA = 'AC'
@@ -323,7 +334,7 @@ class Composition(models.Model):
         (NORWEGIAN, 'Norwegian'),
         (POLISH, 'Polish'),
         (PORTUGUESE, 'Portuguese'),
-        (RUSSIAN, 'Russion'),
+        (RUSSIAN, 'Russian'),
         (SLAVONIC, 'Slavonic (all)'),
         (SPANISH, 'Spanish'),
         (SWAHILI, 'Swahili'),

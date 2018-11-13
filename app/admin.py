@@ -29,5 +29,6 @@ admin.site.register(OrganizationInstance, OrganizationInstanceAdmin)
 
 class PerformancePieceAdmin(admin.ModelAdmin):
     form = PerformancePieceForm
+    save_as = True
 admin.site.register(PerformancePiece, PerformancePieceAdmin)
 

@@ -1,0 +1,62 @@
+﻿{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
+<div class="w3-row w3-padding-32">
+
+<div class="w3-col m6" style="padding-right:32px;">
+  <h1>Performance List</h1>
+  
+  {% regroup performanceinstances by date|date:"Y-m" as pi_lists %}
+  <div class="panel-group">
+    <div class="panel panel-default" style="background-color:black;">
+      {% for date, pi_list in pi_lists %}
+      <div class="panel-heading" style="color:white; background-color:black; border-bottom-width:1px; border-bottom-style:solid;">
+        <h4 class="panel-title">
+          <a data-toggle="collapse" href="#collapse{{ date }}">{{ date }}</a>
+        </h4>
+      </div>
+      {% regroup pi_list by performance.name as p_list %}
+      <div id="collapse{{ date }}" class="panel-collapse {% if not pi_list.0.was_this_year %}collapse{% else %}in{% endif %}">
+        <ul class="list-group" style="margin-bottom:-1px">
+          {% for name, perf_list in p_list %}
+          <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px;"
+              onclick="showperformancedetails({{ perf_list.0.performance.pk }}); showperformancepiecesall({{ perf_list.0.performance.pk }});">
+            <a href="#">{{ name }} ({% for org in perf_list.0.organizations.all %}{{ org.organization.name }}{% if not forloop.last %}, {% endif %}{% endfor %})</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<script>
+    function showperformancedetails(perfid) {
+        document.getElementById("perfdetails").style.visibility = "visible";
+
+        pk = perfid
+        $.ajax({
+            url: 'performance-detail/' + pk,
+            success: function (data) {
+                $('#perfdetails').html(data);
+            }
+        });
+    }
+
+    function showperformancepiecesall(pk) {
+        pk = pk
+        $.ajax({
+            url: 'performance-pieces-all/' + pk,
+            success: function (data) {
+                $('#perfpieces').html(data);
+            }
+        });
+    }
+</script>
+<div class="w3-col m6" id="perfdetails" style="padding-left:32px; visibility:hidden;">
+</div>
+</div>
+</div>
+{% endblock %}

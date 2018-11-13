@@ -1,0 +1,36 @@
+﻿<div>
+    <h1>Performance Details</h1>
+
+    <h3>{{ performance.name }}</h3>
+    
+    <div class="w3-bar w3-black w3-card">
+    <a href="#" onclick="showperformancepiecesall({{ performance.pk }})" class="w3-bar-item w3-button w3-padding-large w3-margin-left">All</a>
+    {% for pi in performanceinstances %}
+    <a href="#" onclick="showperformancepieces({{ pi.pk }})" class="w3-bar-item w3-button w3-padding-large w3-margin-left">{{ pi.date }}</a>
+    {% endfor %}
+    </div>
+
+    <script>
+        function showperformancepieces(pk) {
+            pk = pk
+            $.ajax({
+                url: 'performance-pieces/' + pk,
+                success: function (data) {
+                    $('#perfpieces').html(data);
+                }
+            });
+        }
+
+        function showperformancepiecesall(pk) {
+            pk = pk
+            $.ajax({
+                url: 'performance-pieces-all/' + pk,
+                success: function (data) {
+                    $('#perfpieces').html(data);
+                }
+            });
+        }
+    </script>
+    <div id="perfpieces" style="">
+    </div>
+</div>
