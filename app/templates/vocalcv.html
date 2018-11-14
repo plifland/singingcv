@@ -3,22 +3,21 @@
 {% block content %}
 <h1>Peter Lifland - CV</h1>
 
-<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="cvsidebar">
 <div class="w3-row w3-padding-32">
-	<div class="w3-col m6">
+	<div class="w3-col m4" style="padding-left:100px;">
 	    <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:10px">
 	  
         {% block sidebar %}
-        <ul class="sidebar-nav">
+        <!--<ul class="sidebar-nav">
             <li><a href="{% url 'vocalcv' %}">Home</a></li>
             <li><a href="{% url 'organizations' %}">All organizations</a></li>
             <li><a href="">All conductors</a></li>
             <li><a href="">All composers</a></li>
             <li><a href="">All pieces</a></li>
-        </ul>
+        </ul>-->
         {% endblock %}
     </div>
-    <div class="w3-col m6" style="padding-top:60px;">
+    <div class="w3-col m8">
         <p>Welcome to my CV, where I record where and what I sing!</p>
         
         <p>Present organizations:</p>
@@ -35,14 +34,30 @@
         {% endfor %}
         </ul>
   
-        <p>Fun aggregate stats:</p>
-        <ul>
-            <li><strong>Organizations:</strong> {{ org_count }}</li>
-            <li><strong>Conductors:</strong> {{ conductor_count }}</li>
-            <li><strong>Pieces:</strong> {{ piece_count }}</li>
-        </ul>
+        <p style="padding-top:20px;">Fun aggregate stats</p>
+        <table>
+            <tr>
+                <td style="width:120px;"></td>
+                <td style="width:40px; text-align:center;">Me</td>
+                <td style="width:40px; text-align:center;">DB</td>
+            </tr>
+            <tr>
+                <td><strong>Organizations:</strong></td>
+                <td style="text-align:center;">{{ me_org_count }}</td>
+                <td style="text-align:center;">{{ db_org_count }}</td>
+            </tr>
+            <tr>
+                <td><strong>Conductors:</strong></td>
+                <td style="text-align:center;">{{ me_conductor_count }}</td>
+                <td style="text-align:center;">{{ db_conductor_count }}</td>
+            </tr>
+            <tr>
+                <td><strong>Pieces:</strong></td>
+                <td style="text-align:center;">{{ me_piece_count }}</td>
+                <td style="text-align:center;">{{ db_piece_count }}</td>
+            </tr>
+        </table>
     </div>
-</div>
 </div>
 
 {% endblock %}

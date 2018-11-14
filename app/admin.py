@@ -9,7 +9,6 @@ admin.site.register(Conductor)
 admin.site.register(Singer)
 admin.site.register(Organization)
 admin.site.register(Performance)
-admin.site.register(PerformanceInstance)
 
 class ComposerAdmin(admin.ModelAdmin):
     form = ComposerForm
@@ -26,6 +25,10 @@ admin.site.register(Genre, GenreAdmin)
 class OrganizationInstanceAdmin(admin.ModelAdmin):
     form = OrganizationInstanceForm
 admin.site.register(OrganizationInstance, OrganizationInstanceAdmin)
+
+class PerformanceInstanceAdmin(admin.ModelAdmin):
+    form = PerformanceInstanceForm
+admin.site.register(PerformanceInstance, PerformanceInstanceAdmin)
 
 class PerformancePieceAdmin(admin.ModelAdmin):
     form = PerformancePieceForm

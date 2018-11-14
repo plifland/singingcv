@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import Max,Q
+from django.db.models import Max,Q,Count
 from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
 from django.core.mail import EmailMessage, send_mail
@@ -11,15 +11,23 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
+from datetime import date
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition, Genre
 from .forms import ContactForm, GenreForm, OrganizationInstanceForm, CompositionForm, ComposerForm
 
 @login_required
 def vocalcv(request):
+    # Find me as a singer!
+    me_singer = Singer.objects.get(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
+    me_singer_pk = me_singer.pk
+
+    # My organizations
+    me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid=me_singer_pk) | Q(singersvolunteer=me_singer_pk))
+
     # Gets the most recent record per organization
     organizations = Organization.objects.values('id').annotate(maxdate=Max('organizationinstance__start'))
-    organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in organizations]) & Q(start__in=[o['maxdate'] for o in organizations]))
+    organizationinstances = me_organizationinstances.filter(Q(organization__in=[o['id'] for o in organizations]) & Q(start__in=[o['maxdate'] for o in organizations]))
 
     # Let's add a filter for upcoming performances
     performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today())
@@ -32,19 +40,27 @@ def vocalcv(request):
     activeorgs = organizationinstances.filter(Q(organization__in=performance_orgs))
     inactiveorgs = organizationinstances.exclude(Q(organization__in=performance_orgs))
 
-    org_count = Organization.objects.count()
-    conductor_count = Conductor.objects.count()
-    piece_count = Composition.objects.count()
+    me_org_count = OrganizationInstance.objects.filter(pk__in=me_organizationinstances).values('organization').distinct().count()
+    me_conductor_count = OrganizationInstance.objects.filter(pk__in=me_organizationinstances).values('conductors').distinct().count()
+    me_piece_count = Composition.objects.filter(performancepiece__organizations__in=me_organizationinstances).distinct().count()
+
+    db_org_count = Organization.objects.count()
+    db_conductor_count = Conductor.objects.count()
+    db_piece_count = Composition.objects.count()
     
     return render(
         request,
         'vocalcv.html',
-        context={'activeorgs':activeorgs
-                 ,'inactiveorgs':inactiveorgs
-                 ,'org_count':org_count
-                 ,'conductor_count':conductor_count
-                 ,'piece_count':piece_count
-                 },
+        context={
+            'activeorgs':activeorgs,
+            'inactiveorgs':inactiveorgs,
+            'me_org_count':me_org_count,
+            'me_conductor_count':me_conductor_count,
+            'me_piece_count':me_piece_count,
+            'db_org_count':db_org_count,
+            'db_conductor_count':db_conductor_count,
+            'db_piece_count':db_piece_count,
+            },
     )
 
 def home(request):
@@ -448,6 +464,61 @@ class CompositionAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(title__contains=self.q)
 
         return qs
+class PerformanceAutocomplete(generic.View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Performance.objects.none()
+
+        qs = PerformanceInstance.objects.all()
+
+        q = self.request.GET.get('q')
+        if q:
+            qs = qs.filter(Q(performance__name__contains=q) | Q(performance__name__contains=q))
+
+        performances = {}
+        for p in qs:
+            if not p.performance.pk in performances:
+                orgs = []
+                performances[p.performance.pk] = {'name': p.performance.name, 'orgs': orgs, 'firstdate': date(p.date.year, p.date.month, 1), 'lastdate':date(p.date.year, p.date.month, 1)}
+            else:
+                if (p.date < performances[p.performance.pk]['firstdate']):
+                    performances[p.performance.pk]['firstdate'] = date(p.date.year, p.date.month, 1)
+                elif (p.date > performances[p.performance.pk]['lastdate']):
+                    performances[p.performance.pk]['lastdate'] = date(p.date.year, p.date.month, 1)
+            for o in p.organizations.all():
+                performances[p.performance.pk]['orgs'].append(o.organization.name)
+
+        results = []
+        for pk,v in performances.items():
+            if (v['firstdate'] == v['lastdate']):
+                datestr = "{start:%b %Y}".format(start = v['firstdate'])
+            else:
+                datestr = "{start:%b %Y} - {end:%b %Y}".format(start = v['firstdate'], end = v['lastdate'])
+            results.append({
+                'id':pk,
+                 'text':'<span style="font-size:120%">{name}</span><div style="font-size:80%;line-height:100%;">{orgs}</div><div>{dates}</div>'.format(
+                     name = v['name'],
+                     orgs = "<br />".join(s for s in sorted(set(v['orgs']))),
+                     dates = datestr,
+                     ),
+                 'selected_text':'{name}'.format(
+                     name = v['name'],
+                     ),
+                 })
+
+        # Add on orgs that have no instance
+        performances = Performance.objects.filter(performanceinstance__isnull=True)
+        for p in performances:
+            results.append({
+                'id':p.pk,
+                'text':'<span style="font-size:120%">{name}</span>'.format(name = p.name),
+                'selected_text':p.name,
+                })
+
+        # Format: { results : [{id, text, selected_text},...], pagination : { more : BOOL } }
+        outdict = { 'results':results, 'pagination':{'more':False} }
+
+        return JsonResponse(outdict)
 class PerformanceInstanceAutocomplete(autocomplete.Select2QuerySetView):
     def get_result_label(self, item):
         return '{title}<br />{orgs}<br />{date}'.format(

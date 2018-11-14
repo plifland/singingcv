@@ -172,6 +172,36 @@ class GenreForm(forms.ModelForm):
         model = Genre
         fields = ('__all__')
 
+class PerformanceInstanceForm(forms.ModelForm):
+    performance = forms.ModelChoiceField(
+        queryset = Performance.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'performance-autocomplete', attrs={'data-html': True}),
+    )
+
+    organizations = forms.ModelMultipleChoiceField(
+        queryset = OrganizationInstance.objects.all(),
+        widget = autocomplete.ModelSelect2Multiple(url = 'organizationinstance-autocomplete',
+                                                   forward=['performanceinstance'],
+                                                   attrs={'data-html': True},),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['performance'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['performance'].widget, 
+               self.instance._meta.get_field('performance').remote_field,            
+               admin_site,
+           )
+        self.fields['organizations'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['organizations'].widget, 
+               self.instance._meta.get_field('organizations').remote_field,            
+               admin_site,
+           )
+
+    class Meta:
+        model = PerformanceInstance
+        fields = ('__all__')
+
 class PerformancePieceForm(forms.ModelForm):
     performanceinstance = forms.ModelChoiceField(
         queryset = PerformanceInstance.objects.all(),
