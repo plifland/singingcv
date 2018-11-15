@@ -234,10 +234,12 @@ class Composition(models.Model):
     BRASS = 'BR'
     STRINGS = 'ST'
     CONTINUO = 'BC'
+    BASS = 'BA'
     BELLS = 'BE'
     CELLO = 'CE'
     CLARINET = 'CL'
     GUITAR = 'GU'
+    HARP = 'HP'
     TRUMPET = 'TR'
     VIOLIN = 'VI'
     WATERGLASS = 'WG'
@@ -250,10 +252,12 @@ class Composition(models.Model):
         (BRASS, 'Brass'),
         (STRINGS, 'Strings'),
         (CONTINUO, 'Continuo'),
+        (BASS, 'Bass'),
         (BELLS, 'Bells'),
         (CELLO, 'Cello'),
         (CLARINET, 'Clarinet'),
         (GUITAR, 'Guitar'),
+        (HARP, 'Harp'),
         (TRUMPET, 'Trumpet'),
         (VIOLIN, 'Violin'),
         (WATERGLASS, 'Water Glasses'),

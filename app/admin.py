@@ -4,11 +4,12 @@ from django.contrib import admin
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition, Genre
 from .forms import *
 admin.site.register(Person)
-admin.site.register(Administrator)
-admin.site.register(Conductor)
-admin.site.register(Singer)
 admin.site.register(Organization)
 admin.site.register(Performance)
+
+class AdministratorAdmin(admin.ModelAdmin):
+    form = AdministratorForm
+admin.site.register(Administrator, AdministratorAdmin)
 
 class ComposerAdmin(admin.ModelAdmin):
     form = ComposerForm
@@ -17,6 +18,10 @@ admin.site.register(Composer, ComposerAdmin)
 class CompositionAdmin(admin.ModelAdmin):
     form = CompositionForm
 admin.site.register(Composition, CompositionAdmin)
+
+class ConductorAdmin(admin.ModelAdmin):
+    form = ConductorForm
+admin.site.register(Conductor, ConductorAdmin)
 
 class GenreAdmin(admin.ModelAdmin):
     form = GenreForm
@@ -35,3 +40,6 @@ class PerformancePieceAdmin(admin.ModelAdmin):
     save_as = True
 admin.site.register(PerformancePiece, PerformancePieceAdmin)
 
+class SingerAdmin(admin.ModelAdmin):
+    form = SingerForm
+admin.site.register(Singer, SingerAdmin)

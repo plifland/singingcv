@@ -109,6 +109,7 @@ class OrganizationInstanceForm(forms.ModelForm):
 
 class CompositionForm(forms.ModelForm):
     composer = forms.ModelChoiceField(
+        required=False,
         queryset = Composer.objects.all(),
         widget = autocomplete.ModelSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
     )
@@ -141,6 +142,23 @@ class CompositionForm(forms.ModelForm):
         model = Composition
         fields = ('__all__')    
 
+class AdministratorForm(forms.ModelForm):
+    person = forms.ModelChoiceField(
+        queryset = Person.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'person-autocomplete', attrs={'data-html': True, 'data-minimum-input-length': 2, })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['person'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['person'].widget, 
+               self.instance._meta.get_field('person').remote_field,            
+               admin_site,
+           )
+
+    class Meta:
+        model = Administrator
+        fields = ('__all__')
 class ComposerForm(forms.ModelForm):
     person = forms.ModelChoiceField(
         queryset = Person.objects.all(),
@@ -157,6 +175,40 @@ class ComposerForm(forms.ModelForm):
 
     class Meta:
         model = Composer
+        fields = ('__all__')
+class ConductorForm(forms.ModelForm):
+    person = forms.ModelChoiceField(
+        queryset = Person.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'person-autocomplete', attrs={'data-html': True, 'data-minimum-input-length': 2, })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['person'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['person'].widget, 
+               self.instance._meta.get_field('person').remote_field,            
+               admin_site,
+           )
+
+    class Meta:
+        model = Conductor
+        fields = ('__all__')
+class SingerForm(forms.ModelForm):
+    person = forms.ModelChoiceField(
+        queryset = Person.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'person-autocomplete', attrs={'data-html': True, 'data-minimum-input-length': 2, })
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['person'].widget = RelatedFieldWidgetWrapper( 
+               self.fields['person'].widget, 
+               self.instance._meta.get_field('person').remote_field,            
+               admin_site,
+           )
+
+    class Meta:
+        model = Singer
         fields = ('__all__')
 
 class GenreForm(forms.ModelForm):

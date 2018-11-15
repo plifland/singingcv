@@ -26,8 +26,9 @@ def vocalcv(request):
     me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid=me_singer_pk) | Q(singersvolunteer=me_singer_pk))
 
     # Gets the most recent record per organization
-    organizations = Organization.objects.values('id').annotate(maxdate=Max('organizationinstance__start'))
-    organizationinstances = me_organizationinstances.filter(Q(organization__in=[o['id'] for o in organizations]) & Q(start__in=[o['maxdate'] for o in organizations]))
+    orgs = Organization.objects.values('id').annotate(maxdate=Max('organizationinstance__start'))
+    q = [Q(organization=o['id']) & Q(start=o['maxdate']) for o in orgs]
+    organizationinstances = me_organizationinstances.filter(reduce(OR, q))
 
     # Let's add a filter for upcoming performances
     performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today())
@@ -162,7 +163,6 @@ def performance_detail(request, pk):
         'performancedetails.html',
         {'performance':performance, 'performanceinstances':performanceinstances},
     )
-
 def performance_pieces(request, pk):
     pieces = PerformancePiece.objects.filter(performanceinstance=pk)
 
@@ -178,7 +178,6 @@ def performance_pieces(request, pk):
         'performancepieces.html',
         {'pieces':pieces_grouped},
     )
-
 def performance_pieces_all(request, pk):
     pieces = PerformancePiece.objects.filter(performanceinstance__performance=pk)
 
@@ -198,7 +197,6 @@ def performance_pieces_all(request, pk):
 class OrganizationListView(generic.ListView):
     model = Organization
     template_name = 'orglist.html'
-    
 class OrganizationDetailView(generic.DetailView):
     #model = Organization
     context_object_name = 'orgdetail_list'
@@ -220,6 +218,10 @@ from dal import autocomplete
 from django.db import models
 from django.views import View
 from django.http import JsonResponse
+from functools import reduce
+from operator import __or__ as OR
+from django.db.models import CharField, Value
+from django.db.models.functions import Concat
 
 ### Self-written autocomplete url - responds to a url with a list of organizations formatted in JSON for the DAL (django autocomplete light) views
 ### Example testing url: organization-autocomplete/?q=b
@@ -239,7 +241,9 @@ class OrganizationAutocomplete(generic.View):
         # Organization needs to be crossed with an organizationinstance
         # This code gets the most recent organizationinstance per organization (post org filtering from above)
         orgs = orgs.values('id').annotate(maxyear=Max('organizationinstance__start'))
-        organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in orgs]) & Q(start__in=[o['maxyear'] for o in orgs]))
+        #organizationinstances = OrganizationInstance.objects.filter(Q(organization__in=[o['id'] for o in orgs]) & Q(start__in=[o['maxyear'] for o in orgs]))
+        q = [Q(organization=o['id']) & Q(start=o['maxyear']) for o in orgs]
+        organizationinstances = OrganizationInstance.objects.filter(reduce(OR, q))
 
         # Create the results block, which is a list of JSON objects as follows
         # Format: [{id, text, selected_text},...]
@@ -250,11 +254,11 @@ class OrganizationAutocomplete(generic.View):
         for org in organizationinstances:
             results.append({ 
                 'id':org.organization.pk,
-                 'text':'{name} (updated {year})<br />{city}<br />{conductors}'.format(
+                 'text':'<span class="autocomplete-main">{name}</span><div class="autocomplete-detail">last updated {year}</div><div class="autocomplete-detail">{city}</div><div class="autocomplete-detail">{conductors}</div>'.format(
                      name = org.organization.name,
                      year = "{0:%b %Y}".format(org.end),
                      city = org.organization.city,
-                     conductors = ", ".join(s.person.get_full_name() for s in org.conductors.all()),
+                     conductors = "<br />".join(s.person.get_full_name() for s in org.conductors.all()),
                      ),
                  'selected_text':org.organization.name,
                  })
@@ -275,7 +279,7 @@ class OrganizationAutocomplete(generic.View):
         return JsonResponse(outdict)
 class OrganizationInstanceAutocomplete(autocomplete.Select2QuerySetView):
     def get_result_label(self, item):
-        return '{name}<br />{start} - {end}'.format(
+        return '<span class="autocomplete-main">{name}</span><div class="autocomplete-detail">{start} - {end}</div>'.format(
             name = item.organization.name,
             start = item.start,
             end = item.end,
@@ -310,19 +314,19 @@ class PersonAutocomplete(generic.View):
 
         q = self.request.GET.get('q')
         if q:
-            persons = persons.filter(Q(lastname__istartswith=q) | Q(firstname__istartswith=q))
+            persons = persons.annotate(fullname=Concat('firstname', Value(' '), 'lastname', output_field=CharField())).filter(fullname__icontains=q)
 
         results = []
         for p in persons:
             singer = Singer.objects.filter(person=p.pk)
             if singer:
-                singertext = "<br />Singer ({0})".format(", ".join(s.get_voicepart_display() for s in singer))
+                singertext = "Singer ({0})".format(", ".join(s.get_voicepart_display() for s in singer))
             else:
                 singertext = ""
 
             composer = Composer.objects.filter(person=p.pk)
             if composer:
-                composertext = "<br />Composer"
+                composertext = "Composer"
             else:
                 composertext = ""
 
@@ -334,9 +338,9 @@ class PersonAutocomplete(generic.View):
                 orgs = OrganizationInstance.objects.filter(Q(conductors = conductor.pk) | Q(associateconductors = conductor.pk))
                 if orgs:
                     orgs = list(set(orgs.values_list('organization__name', flat=True)))[:3]
-                    conductortext = "<br />Conductor ({0})".format(", ".join(o for o in orgs))
+                    conductortext = "Conductor ({0})".format(", ".join(o for o in orgs))
                 else:
-                    conductortext = "<br />Conductor"
+                    conductortext = "Conductor"
             else:
                 conductortext = ""
 
@@ -348,15 +352,19 @@ class PersonAutocomplete(generic.View):
                 orgs = OrganizationInstance.objects.filter(administrators = admin.pk)
                 if orgs:
                     orgs = list(set(orgs.values_list('organization__name', flat=True)))[:3]
-                    admintext = "<br />Administrator ({0})".format(", ".join(o for o in orgs))
+                    admintext = "Administrator ({0})".format(", ".join(o for o in orgs))
                 else:
-                    admintext = "<br />Administrator"
+                    admintext = "Administrator"
             else:
                 admintext = ""
 
             results.append({
                 'id':p.pk,
-                 'text':'{name}{singer}{conductor}{administrator}{composer}'.format(
+                 'text':'''<span class="autocomplete-main">{name}</span>
+                            <div class="autocomplete-detail">{singer}</div>
+                            <div class="autocomplete-detail">{conductor}</div>
+                            <div class="autocomplete-detail">{administrator}</div>
+                            <div class="autocomplete-detail">{composer}</div>'''.format(
                      name = p.get_full_name(),
                      singer = singertext,
                      conductor = conductortext,
@@ -496,7 +504,7 @@ class PerformanceAutocomplete(generic.View):
                 datestr = "{start:%b %Y} - {end:%b %Y}".format(start = v['firstdate'], end = v['lastdate'])
             results.append({
                 'id':pk,
-                 'text':'<span style="font-size:120%">{name}</span><div style="font-size:80%;line-height:100%;">{orgs}</div><div>{dates}</div>'.format(
+                 'text':'<span class="autocomplete-main">{name}</span><div class="autocomplete-detail">{orgs}</div><div class="autocomplete-detail">{dates}</div>'.format(
                      name = v['name'],
                      orgs = "<br />".join(s for s in sorted(set(v['orgs']))),
                      dates = datestr,
