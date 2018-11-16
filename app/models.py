@@ -174,7 +174,14 @@ class PerformanceInstance(models.Model):
 
     def was_this_year(self):
         now = timezone.now()
-        if now.year ==  self.date.year:
+        if now.year == self.date.year:
+            return True
+        else:
+            return False
+
+    def was_this_month(self):
+        now = timezone.now()
+        if now.year == self.date.year and now.month == self.date.month:
             return True
         else:
             return False

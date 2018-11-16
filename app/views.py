@@ -208,32 +208,42 @@ def rep_list(request):
     ### Filters
     composer = request.GET.get('composer')
     if composer:
-        pieces = pieces.filter(composition__composer=composer)
+        try:
+            composerint = int(composer)
+            pieces = pieces.filter(composition__composer=composer)
+        except:
+            ## Hopefully we have a "Lastname, Firstname" string at this point
+            try:
+                (lastname, firstname) = composer.split(', ')
+                #firstname = firstname[1:] # remove the space
+                pieces = pieces.filter(Q(composition__composer__person__firstname=firstname) & Q(composition__composer__person__lastname=lastname))
+            except ValueError:
+                pieces = pieces
     organization = request.GET.get('organization')
     if organization:
         pieces = pieces.filter(organizations__organization__in=organization)
     year = request.GET.get('year')
     if year:
         pieces = pieces.filter(performanceinstance__date__year=year)
+    era = request.GET.get('era')
+    if era:
+        pieces = pieces.filter(composition__tags=era)
 
     piecesdict = {}
     for p in pieces:
         # New piece
         if not p.composition.pk in piecesdict:
-            orgs = []
-            piecesdict[p.composition.pk] = {'composer':str(p.composition.composer), 'title':p.composition.title, 'orgs':orgs, 'mostrecentdate':p.performanceinstance.date}
-        # Already extant piece
-        else:
-            if piecesdict[p.composition.pk]['mostrecentdate'] < p.performanceinstance.date:
-                piecesdict[p.composition.pk]['mostrecentdate'] = p.performanceinstance.date
-        # Either way, add on possible organizations - will dedupe later!
+            performances = {}
+            piecesdict[p.composition.pk] = {'composer':str(p.composition.composer), 'title':p.composition.title, 'performances':performances}
+        # Add on performances - will dedupe later!
         for o in p.organizations.all():
-            piecesdict[p.composition.pk]['orgs'].append(o.organization.name)
+            if o.organization.pk in piecesdict[p.composition.pk]['performances']:
+                piecesdict[p.composition.pk]['performances'][o.organization.name].append(p.performanceinstance.date.year)
+                piecesdict[p.composition.pk]['performances'][o.organization.name] = sorted(set(piecesdict[p.composition.pk]['performances'][o.organization.pk]))
+            else:
+                piecesdict[p.composition.pk]['performances'][o.organization.name] = [p.performanceinstance.date.year]
 
-    for pk,p in piecesdict.items():
-        p['orgs'] = sorted(set(p['orgs']))
-
-    sorteddict = sorted(piecesdict.items(), key = lambda v: (v[1]['composer'], v[1]['title'], v[1]['mostrecentdate']))
+    sorteddict = sorted(piecesdict.items(), key = lambda v: (v[1]['composer'], v[1]['title']))
 
     paginator = Paginator(sorteddict, 20) # Show 20 pieces per page
     page = request.GET.get('page')

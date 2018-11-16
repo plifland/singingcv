@@ -52,6 +52,11 @@ class RepListFiltersForm(forms.Form):
         widget = forms.TextInput(attrs={'size':10}),
     )
 
+    era = forms.ModelChoiceField(
+        required=False,
+        queryset = Genre.objects.filter(subtype='E'),
+    )
+
 ### Data input
 class OrganizationInstanceForm(forms.ModelForm):
     organization = forms.ModelChoiceField(

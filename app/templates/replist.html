@@ -10,16 +10,14 @@
     <table>
         <tr>
             <th style="width:240px;">Composer</th>
-            <th style="width:360px; padding-left:12px; padding-right:24px;">Title</th>
-            <th style="width:200px;">Orgs</th>
-            <th style="width:90px; padding-left:5px; text-align:right;">Last sung</th>
+            <th style="width:400px; padding-left:12px; padding-right:24px;">Title</th>
+            <th style="width:200px;">Performances</th>
         </tr>
     {% for pk,p in pieces %}
         <tr>
-            <td style="padding-top:5px;">{{ p.composer }}</td>
+            <td style="padding-top:5px;"><a href="{% url 'replist' %}?composer={{ p.composer }}">{{ p.composer }}</a></td>
             <td style="padding-top:5px; padding-left:12px; padding-right:24px;">{{ p.title }}</td>
-            <td style="padding-top:5px;">{% for o in p.orgs %}{{ o }}{% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
-            <td style="padding-top:5px; padding-left:5px; text-align:right;">{{ p.mostrecentdate|date:"b Y"|title }}</td>
+            <td style="padding-top:5px; font-size:90%; line-height:100%;">{% for o,d in p.performances.items %}{{ o }} ({% for y in d %}{{ y }}{% if not forloop.last %}, {% endif %}{% endfor %}){% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
         </tr>
     {% endfor %}
     </table>

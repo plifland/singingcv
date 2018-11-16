@@ -21,15 +21,21 @@
           {{ form.composer.label_tag }}
           {{ form.composer }}
         </div>
-        <div class="col-md-5"></div>
-        <div class="form-group col-md-7" style="text-align:right;">
+        <div class="col-md-1" style="vertical-align:middle;">
+            <button type="submit" class="btn btn-primary">
+                <span class="glyphicon glyphicon-search"></span> Filter
+            </button>
+        </div>
+        <div class="form-group col-md-4" style="text-align:right; vertical-align:middle;">
+          {{ form.era.label_tag }}
+          {{ form.era }}
+        </div>
+        <div class="form-group col-md-7" style="text-align:right; vertical-align:middle;">
           {{ form.organization.label_tag }}
           {{ form.organization }}
         </div>
         
       </div>
-      <button type="submit" class="btn btn-primary">
-        <span class="glyphicon glyphicon-search"></span> Filter
-      </button>
+      
     </div>
   </form>

@@ -17,7 +17,7 @@
         </h4>
       </div>
       {% regroup pi_list by performance.name as p_list %}
-      <div id="collapse{{ date }}" class="panel-collapse {% if not pi_list.0.was_this_year %}collapse{% else %}in{% endif %}">
+      <div id="collapse{{ date }}" class="panel-collapse {% if not pi_list.0.was_this_month %}collapse{% else %}in{% endif %}">
         <ul class="list-group" style="margin-bottom:-1px">
           {% for name, perf_list in p_list %}
           <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px;"
