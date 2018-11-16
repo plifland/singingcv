@@ -12,9 +12,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
 from datetime import date
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition, Genre
-from .forms import ContactForm, GenreForm, OrganizationInstanceForm, CompositionForm, ComposerForm
+from .forms import ContactForm, GenreForm, OrganizationInstanceForm, CompositionForm, ComposerForm, RepListFiltersForm
 
 @login_required
 def vocalcv(request):
@@ -192,6 +193,61 @@ def performance_pieces_all(request, pk):
         request,
         'performancepieces.html',
         {'pieces':pieces_grouped},
+    )
+
+def rep_list(request):
+    # Find me as a singer!
+    me_singer = Singer.objects.get(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
+    me_singer_pk = me_singer.pk
+
+    # My organizations
+    me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid=me_singer_pk) | Q(singersvolunteer=me_singer_pk))
+
+    pieces = PerformancePiece.objects.filter(organizations__in=me_organizationinstances)
+
+    ### Filters
+    composer = request.GET.get('composer')
+    if composer:
+        pieces = pieces.filter(composition__composer=composer)
+    organization = request.GET.get('organization')
+    if organization:
+        pieces = pieces.filter(organizations__organization__in=organization)
+    year = request.GET.get('year')
+    if year:
+        pieces = pieces.filter(performanceinstance__date__year=year)
+
+    piecesdict = {}
+    for p in pieces:
+        # New piece
+        if not p.composition.pk in piecesdict:
+            orgs = []
+            piecesdict[p.composition.pk] = {'composer':str(p.composition.composer), 'title':p.composition.title, 'orgs':orgs, 'mostrecentdate':p.performanceinstance.date}
+        # Already extant piece
+        else:
+            if piecesdict[p.composition.pk]['mostrecentdate'] < p.performanceinstance.date:
+                piecesdict[p.composition.pk]['mostrecentdate'] = p.performanceinstance.date
+        # Either way, add on possible organizations - will dedupe later!
+        for o in p.organizations.all():
+            piecesdict[p.composition.pk]['orgs'].append(o.organization.name)
+
+    for pk,p in piecesdict.items():
+        p['orgs'] = sorted(set(p['orgs']))
+
+    sorteddict = sorted(piecesdict.items(), key = lambda v: (v[1]['composer'], v[1]['title'], v[1]['mostrecentdate']))
+
+    paginator = Paginator(sorteddict, 20) # Show 20 pieces per page
+    page = request.GET.get('page')
+    pieces_page = paginator.get_page(page)
+
+    form = RepListFiltersForm
+
+    return render(
+        request,
+        'replist.html',
+        {
+            'pieces':pieces_page
+            ,'form':form
+         },
     )
 
 class OrganizationListView(generic.ListView):

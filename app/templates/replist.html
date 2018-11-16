@@ -1,0 +1,56 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="replist">
+<div class="w3-row w3-padding-32">
+
+<div class="w3-col m12">
+    {% include "forms/repfilters.html" %}
+
+    <table>
+        <tr>
+            <th style="width:240px;">Composer</th>
+            <th style="width:360px; padding-left:12px; padding-right:24px;">Title</th>
+            <th style="width:200px;">Orgs</th>
+            <th style="width:90px; padding-left:5px; text-align:right;">Last sung</th>
+        </tr>
+    {% for pk,p in pieces %}
+        <tr>
+            <td style="padding-top:5px;">{{ p.composer }}</td>
+            <td style="padding-top:5px; padding-left:12px; padding-right:24px;">{{ p.title }}</td>
+            <td style="padding-top:5px;">{% for o in p.orgs %}{{ o }}{% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
+            <td style="padding-top:5px; padding-left:5px; text-align:right;">{{ p.mostrecentdate|date:"b Y"|title }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+</div>
+
+<div class="w3-row">
+<div class="w3-center" style="padding-top:1px;">
+    <span class="step-links">
+        {% if pieces.has_previous %}
+            <a href="?{{ request.GET.urlencode }}&page=1">&laquo; first</a>
+            <a href="?{{ request.GET.urlencode }}&page={{ pieces.previous_page_number }}">prev</a>
+        {% else %}
+            <span style="padding-right:70px;">&nbsp;</span>
+        {% endif %}
+
+        <span class="current" style="padding-left:10px; padding-right:10px;">
+            Page {{ pieces.number }} of {{ pieces.paginator.num_pages }}
+        </span>
+
+        {% if pieces.has_next %}
+            <a href="?{{ request.GET.urlencode }}&page={{ pieces.next_page_number }}">next</a>
+            <a href="?{{ request.GET.urlencode }}&page={{ pieces.paginator.num_pages }}">last &raquo;</a>
+        {% else %}
+            <span style="padding-right:70px;">&nbsp;</span>
+        {% endif %}
+    </span>
+</div>
+</div>
+
+<script>
+</script>
+</div>
+{% endblock %}

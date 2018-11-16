@@ -10,10 +10,13 @@ urlpatterns = [
     path('links', login_required(views.links), name='links'),
     path('contact', views.contact, name='contact'),
     path('vocalcv', views.vocalcv, name='vocalcv'),
+
     path('performances', views.Performances.as_view(), name='performances'),
     path('performance-detail/<int:pk>', views.performance_detail, name='performance-detail'),
     path('performance-pieces/<int:pk>', views.performance_pieces, name='performance-pieces'),
     path('performance-pieces-all/<int:pk>', views.performance_pieces_all, name='performance-pieces-all'),
+
+    path('replist', views.rep_list, name='replist'),
 
     path('organizations/', views.OrganizationListView.as_view(), name='organizations'),
     path('organization/<int:pk>', views.OrganizationDetailView.as_view(), name='organization-detail'),

@@ -33,6 +33,25 @@ class ContactForm(forms.Form):
         widget=forms.Textarea
     )
 
+### Replist filter
+class RepListFiltersForm(forms.Form):
+    composer = forms.ModelChoiceField(
+        required=False,
+        queryset = Composer.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
+    )
+
+    organization = forms.ModelChoiceField(
+        required=False,
+        queryset = Organization.objects.all(),
+        widget = autocomplete.ModelSelect2(url = 'organization-autocomplete', attrs={'data-html': True}),
+    )
+
+    year = forms.CharField(
+        required=False,
+        widget = forms.TextInput(attrs={'size':10}),
+    )
+
 ### Data input
 class OrganizationInstanceForm(forms.ModelForm):
     organization = forms.ModelChoiceField(
