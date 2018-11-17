@@ -219,9 +219,9 @@ def rep_list(request):
                 pieces = pieces.filter(Q(composition__composer__person__firstname=firstname) & Q(composition__composer__person__lastname=lastname))
             except ValueError:
                 pieces = pieces
-    organization = request.GET.get('organization')
-    if organization:
-        pieces = pieces.filter(organizations__organization__in=organization)
+    org = request.GET.get('org')
+    if org:
+        pieces = pieces.filter(organizations__organization=org)
     year = request.GET.get('year')
     if year:
         pieces = pieces.filter(performanceinstance__date__year=year)
@@ -260,24 +260,60 @@ def rep_list(request):
          },
     )
 
+from itertools import chain
+def org_details(request, pk):
+    org = pk
+    try:
+        pk = int(org)
+    except:
+        ## This means we were passed an orgname
+        try:
+            pk = Organization.objects.get(name=org).pk
+        except ValueError:
+            return
+
+    # Get the most recent organizationinstance per org
+    organizationinstances = OrganizationInstance.objects.filter(organization=pk)
+    orgstart = Organization.objects.filter(pk=pk).values('id').annotate(maxyear=Max('organizationinstance__start'))
+    q = [Q(organization=o['id']) & Q(start=o['maxyear']) for o in orgstart]
+    organizationinstance_mostrecent = organizationinstances.get(reduce(OR, q))
+
+    sopranos = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='S') | Q(voicepart='M')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='S') | Q(voicepart='M'))))
+    altos = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='A') | Q(voicepart='CT')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='A') | Q(voicepart='CT'))))
+    tenors = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='T') | Q(voicepart='CA')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='T') | Q(voicepart='CA'))))
+    basses = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='BR') | Q(voicepart='BS')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='BR') | Q(voicepart='BS'))))
+
+    
+    performances = PerformanceInstance.objects.filter(organizations__in=[o.pk for o in organizationinstances])
+
+    context = {
+        'orginst_mostrecent':organizationinstance_mostrecent,
+        'sopranos':sopranos,
+        'altos':altos,
+        'tenors':tenors,
+        'basses':basses,
+        'performances':performances
+        }
+    return render(request, 'orgdetail.html', context)
+
 class OrganizationListView(generic.ListView):
     model = Organization
     template_name = 'orglist.html'
-class OrganizationDetailView(generic.DetailView):
-    #model = Organization
-    context_object_name = 'orgdetail_list'
-    template_name = 'orgdetail.html'
+#class OrganizationDetailView(generic.DetailView):
+#    #model = Organization
+#    context_object_name = 'orgdetail_list'
+#    template_name = 'orgdetail.html'
     
-    def get_queryset(self):
-        self.organization = get_object_or_404(Organization, id=self.kwargs.get('pk'))
-        return Organization.objects.filter(id = self.kwargs.get('pk'))
+#    def get_queryset(self):
+#        self.organization = get_object_or_404(Organization, id=self.kwargs.get('pk'))
+#        return Organization.objects.filter(id = self.kwargs.get('pk'))
     
-    def get_context_data(self, **kwargs):
-        context = super(OrganizationDetailView, self).get_context_data(**kwargs)
-        context['organization'] = Organization.objects.all()
-        context['performance'] = Performance.objects.filter(organization = self.organization)
-        # And so on for more models
-        return context
+#    def get_context_data(self, **kwargs):
+#        context = super(OrganizationDetailView, self).get_context_data(**kwargs)
+#        context['organization'] = Organization.objects.all()
+#        context['performance'] = Performance.objects.filter(organization = self.organization)
+#        # And so on for more models
+#        return context
 
 ### Autocomplete views
 from dal import autocomplete
@@ -370,7 +406,6 @@ class OrganizationInstanceAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(organization__name__contains=self.q)
 
         return qs
-
 class PersonAutocomplete(generic.View):
     def get(self, request):
         if not self.request.user.is_authenticated:
@@ -447,7 +482,6 @@ class PersonAutocomplete(generic.View):
         outdict = { 'results':results, 'pagination':{'more':False} }
 
         return JsonResponse(outdict)
-
 class AdministratorAutocomplete(autocomplete.Select2QuerySetView):
     def get_result_label(self, item):
         return item.person.get_full_name()
@@ -507,7 +541,6 @@ class SingerAutocomplete(autocomplete.Select2QuerySetView):
             qs = qs.filter(Q(person__lastname__istartswith=self.q) | Q(person__firstname__istartswith=self.q))
 
         return qs
-
 class GenreAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
         if not self.request.user.is_authenticated:

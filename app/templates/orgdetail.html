@@ -1,32 +1,66 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-  <h1>{{ orgdetail_list.name }}</h1>
+<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
+<div class="w3-row">
+  <h1>{{ orginst_mostrecent.organization.name }}</h1>
+  <span style="font-size:80%">last updated: {{ orginst_mostrecent.end|date:"b Y"|title }}</span>
 
-  <p><strong>Conductor:</strong> <a href="">{{ orgdetail_list.conductor.person.get_full_name }}</a></p>
-  <p><strong>Type:</strong> {{ orgdetail_list.type }}</p>
-  <p><strong>Size:</strong> {{ orgdetail_list.size }}</p>
+  <div style="padding-top:20px;">
+    Type: {{ orginst_mostrecent.organization.get_type_display }}<br />
+    Size: {{ orginst_mostrecent.organization.get_size_display }}<br />
+    {{ orginst_mostrecent.organization.city }}<br />
+    <a href="{{ orginst_mostrecent.organization.url }}">{{ orginst_mostrecent.organization.url }}</a>
+  </div>
 
-  <div style="margin-left:20px;margin-top:20px">
+  <div style="padding-top:20px;">
+      
+  </div>
+  <div style="font-size:110%;">
+    {% if orginst_mostrecent.conductors.all %}<span>Conductor(s):</span> {% for p in orginst_mostrecent.conductors.all %}{{ p.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}<br />{% endif %}
+    {% if orginst_mostrecent.administrators.all %}<span>Administrator(s):</span> {% for p in orginst_mostrecent.administrators.all %}{{ p.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}<br />{% endif %}
+    {% if orginst_mostrecent.associateconductors.all %}<span>Associate conductor(s):</span> {% for p in orginst_mostrecent.associateconductors.all %}{{ p.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}<br />{% endif %}
+    <div class="row" style="padding-top:10px;">
+        <div class="col-sm-3">
+            <div style="font-size:110%; font-weight:200;">Sopranos</div>
+            {% for p in sopranos %}{{ p.person.get_full_name }}{% if not forloop.last %}<br />{% endif %}{% endfor %}
+        </div>
+        <div class="col-sm-3">
+            <div style="font-size:110%; font-weight:200;">Altos</div>
+            {% for p in altos %}{{ p.person.get_full_name }}{% if not forloop.last %}<br />{% endif %}{% endfor %}
+        </div>
+        <div class="col-sm-3">
+            <div style="font-size:110%; font-weight:200;">Tenors</div>
+            {% for p in tenors %}{{ p.person.get_full_name }}{% if not forloop.last %}<br />{% endif %}{% endfor %}
+        </div>
+        <div class="col-sm-3">
+            <div style="font-size:110%; font-weight:200;">Basses</div>
+            {% for p in basses %}{{ p.person.get_full_name }}{% if not forloop.last %}<br />{% endif %}{% endfor %}
+        </div>
+    </div>
+  </div>
+
+  <div style="padding-top:30px">
     <h4>Performances</h4>
 
 	<table>
 	<tr>
-		<th width="120px">Date</th>
-		<th width="120px">Location</th>
-		<th width="240px">Venue</th>
-		<th width="240px">Name</th>
+        <th style="font-size:110%; font-weight:200;">Name</th>
+		<th style="padding-left:25px; font-size:110%; font-weight:200;">Date</th>
+		<th style="padding-left:25px; font-size:110%; font-weight:200;">Location</th>
+		<th style="padding-left:25px; font-size:110%; font-weight:200;">Venue</th>
 	</tr>
-    {% for performance_group in performance %}
-	{% for performance_inst in performance_group.performances.all %}
+	{% for pi in performances %}
     <tr>
-		<td>{{performance_inst.date}}</td>
-		<td>{{performance_inst.city}}</td>
-		<td>{{performance_inst.venue}}</td>
-		<td>{{performance_group.name}}</td>
+		<td><a href="{% url 'performances' %}?pi={{ pi.pk }}">{{ pi.performance.name }}</a></td>
+        <td style="padding-left:25px;">{{ pi.date|date:"b d, Y"|title }}</td>
+		<td style="padding-left:25px;">{{ pi.city }}</td>
+		<td style="padding-left:25px;">{{ pi.venue }}</td>
 	</tr>
     {% endfor %}
-	{% endfor %}
 	</table>
   </div>
+
+</div>
+</div>
 {% endblock %}

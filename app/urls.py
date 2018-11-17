@@ -19,7 +19,8 @@ urlpatterns = [
     path('replist', views.rep_list, name='replist'),
 
     path('organizations/', views.OrganizationListView.as_view(), name='organizations'),
-    path('organization/<int:pk>', views.OrganizationDetailView.as_view(), name='organization-detail'),
+    path('organization/<int:pk>', views.org_details, name='organization-detail'),
+    re_path(r'^organization/(?P<pk>[\w\s:]+)$', views.org_details, name='organization-detail-name'),
 
     path('accounts/', include('django.contrib.auth.urls')),
 
