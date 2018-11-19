@@ -306,6 +306,7 @@ class Composition(models.Model):
     JAPANESE = 'JA'
     KOREAN = 'KO'
     LATIN = 'LA'
+    LATVIAN = 'LV'
     NORWEGIAN = 'NO'
     POLISH = 'PL'
     PORTUGUESE = 'PR'
@@ -342,6 +343,7 @@ class Composition(models.Model):
         (ITALIAN, 'Italian'),
         (JAPANESE, 'Japanese'),
         (KOREAN, 'Korean'),
+        (LATVIAN, 'Latvian'),
         (NORWEGIAN, 'Norwegian'),
         (POLISH, 'Polish'),
         (PORTUGUESE, 'Portuguese'),

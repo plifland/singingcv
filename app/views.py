@@ -8,6 +8,7 @@ from django.shortcuts import redirect
 from django.template.loader import get_template
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.core.paginator import Paginator
@@ -40,7 +41,7 @@ def vocalcv(request):
     #performance_orgs = list(set(performance_orgs))
     performance_orgs = list(set(performances.values_list('organizations__organization', flat=True)))
     activeorgs = organizationinstances.filter(Q(organization__in=performance_orgs))
-    inactiveorgs = organizationinstances.exclude(Q(organization__in=performance_orgs))
+    inactiveorgs = organizationinstances.exclude(organization__in=performance_orgs)
 
     me_org_count = OrganizationInstance.objects.filter(pk__in=me_organizationinstances).values('organization').distinct().count()
     me_conductor_count = OrganizationInstance.objects.filter(pk__in=me_organizationinstances).values('conductors').distinct().count()
@@ -141,7 +142,7 @@ def view_organizations(request):
         context={},
     )   
 
-class Performances(generic.View):
+class Performances(LoginRequiredMixin, generic.View):
     def get(self, request):
         if not self.request.user.is_authenticated:
             return Performance.objects.none()
@@ -155,7 +156,26 @@ class Performances(generic.View):
             'performances.html',
             context={'performanceinstances':performanceinstances},
         )
+class PerformancesSpecific(LoginRequiredMixin, generic.View):
+    def get(self, request, pk, pi):
+        if not self.request.user.is_authenticated:
+            return Performance.objects.none()
 
+        # Gets the most recent record per organization
+        #performances = Performance.objects.all()
+        performanceinstances = PerformanceInstance.objects.all()
+    
+        context={
+            'performanceinstances':performanceinstances,
+            'pk':pk,
+            'pi':pi,
+            }
+        return render(
+            request,
+            'performances.html',
+            context,
+        )
+@login_required
 def performance_detail(request, pk):
     performance = Performance.objects.get(pk=pk)
     performanceinstances = PerformanceInstance.objects.filter(performance=pk)
@@ -164,6 +184,7 @@ def performance_detail(request, pk):
         'performancedetails.html',
         {'performance':performance, 'performanceinstances':performanceinstances},
     )
+@login_required
 def performance_pieces(request, pk):
     pieces = PerformancePiece.objects.filter(performanceinstance=pk)
 
@@ -179,6 +200,7 @@ def performance_pieces(request, pk):
         'performancepieces.html',
         {'pieces':pieces_grouped},
     )
+@login_required
 def performance_pieces_all(request, pk):
     pieces = PerformancePiece.objects.filter(performanceinstance__performance=pk)
 
@@ -195,6 +217,7 @@ def performance_pieces_all(request, pk):
         {'pieces':pieces_grouped},
     )
 
+@login_required
 def rep_list(request):
     # Find me as a singer!
     me_singer = Singer.objects.get(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
@@ -261,6 +284,7 @@ def rep_list(request):
     )
 
 from itertools import chain
+@login_required
 def org_details(request, pk):
     org = pk
     try:
@@ -282,7 +306,6 @@ def org_details(request, pk):
     altos = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='A') | Q(voicepart='CT')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='A') | Q(voicepart='CT'))))
     tenors = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='T') | Q(voicepart='CA')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='T') | Q(voicepart='CA'))))
     basses = list(chain(organizationinstance_mostrecent.singerspaid.filter(Q(voicepart='BR') | Q(voicepart='BS')), organizationinstance_mostrecent.singersvolunteer.filter(Q(voicepart='BR') | Q(voicepart='BS'))))
-
     
     performances = PerformanceInstance.objects.filter(organizations__in=[o.pk for o in organizationinstances])
 
@@ -296,7 +319,7 @@ def org_details(request, pk):
         }
     return render(request, 'orgdetail.html', context)
 
-class OrganizationListView(generic.ListView):
+class OrganizationListView(LoginRequiredMixin, generic.ListView):
     model = Organization
     template_name = 'orglist.html'
 #class OrganizationDetailView(generic.DetailView):
@@ -398,7 +421,7 @@ class OrganizationInstanceAutocomplete(autocomplete.Select2QuerySetView):
 
         # organizationinstance-autocomplete/?performanceinstance=2
         if perfinst:
-            performance = PerformanceInstance.objects.filter(performance = perfinst)
+            performance = PerformanceInstance.objects.filter(pk = perfinst)
             if performance:
                 qs = qs.filter(id__in = [o.id for o in performance.first().organizations.all()])
 

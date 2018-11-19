@@ -1,0 +1,53 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="w3-container w3-content" style="max-width:1200px;" id="guestlogin">
+<div class="w3-row w3-padding-64">
+    <div style="padding-left:200px; padding-top:10px; padding-right:200px;">
+        <section id="loginForm">
+            <form action="{% url 'login' %}?next=replist" method="post" class="form-horizontal">
+                {% csrf_token %}
+                <h2>Guest Login</h2>
+                <h5>This part of the website requires login.</h5>
+                <h5>In lieu of making a login, please login with guest credentials!</h5>
+
+                <h2>Username: guest</h2>
+                <h2>Password: lifland-guest</h2>
+
+                <h5>This lets humans use this section while keeping search engines out</h5>
+
+                <hr />
+                <table>
+                <tr>
+                    <td>{{ form.username.label_tag }}</td>
+                    <td style="padding-left:5px;">{{ form.username }}</td>
+                </tr>
+                <tr>
+                    <td style="padding-top:5px;">{{ form.password.label_tag }}</td>
+                    <td style="padding-top:5px; padding-left:5px;">{{ form.password }}</td>
+                </tr>
+                </table>
+                <div class="form-group" style="padding-top:10px;">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="hidden" name="next" value="/replist" />
+                        <input type="submit" value="Log in" class="btn btn-default" />
+                    </div>
+                </div>
+                {% if form.errors %}
+                <p class="validation-summary-errors">Please enter a correct user name and password.</p>
+                {% endif %}
+            </form>
+        </section>
+    </div>
+</div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+
+{% load staticfiles %}
+<script src="{% static 'app/scripts/jquery.validate.min.js' %}"></script>
+
+{% endblock %}

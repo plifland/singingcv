@@ -52,7 +52,7 @@
 	</tr>
 	{% for pi in performances %}
     <tr>
-		<td><a href="{% url 'performances' %}?pi={{ pi.pk }}">{{ pi.performance.name }}</a></td>
+		<td><a href="{% url 'performances-specific' pk=pi.performance.pk pi=pi.pk  %}">{{ pi.performance.name }}</a></td>
         <td style="padding-left:25px;">{{ pi.date|date:"b d, Y"|title }}</td>
 		<td style="padding-left:25px;">{{ pi.city }}</td>
 		<td style="padding-left:25px;">{{ pi.venue }}</td>
