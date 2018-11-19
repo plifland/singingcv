@@ -25,12 +25,13 @@ def vocalcv(request):
     me_singer_pk = me_singer.pk
 
     # My organizations
-    me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid=me_singer_pk) | Q(singersvolunteer=me_singer_pk))
+    organizationinstances = OrganizationInstance.objects.all()
+    me_organizationinstances = list(chain(organizationinstances.filter(singerspaid=me_singer_pk).values_list('id', flat=True), organizationinstances.filter(singersvolunteer=me_singer_pk).values_list('id', flat=True)))
 
     # Gets the most recent record per organization
     orgs = Organization.objects.values('id').annotate(maxdate=Max('organizationinstance__start'))
     q = [Q(organization=o['id']) & Q(start=o['maxdate']) for o in orgs]
-    organizationinstances = me_organizationinstances.filter(reduce(OR, q))
+    mru_organizationinstances = organizationinstances.filter(reduce(OR, q))
 
     # Let's add a filter for upcoming performances
     performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today())
@@ -40,11 +41,11 @@ def vocalcv(request):
     #        performance_orgs.append(org.organization.id)
     #performance_orgs = list(set(performance_orgs))
     performance_orgs = list(set(performances.values_list('organizations__organization', flat=True)))
-    activeorgs = organizationinstances.filter(Q(organization__in=performance_orgs))
-    inactiveorgs = organizationinstances.exclude(organization__in=performance_orgs)
+    activeorgs = mru_organizationinstances.filter(Q(organization__in=performance_orgs) & Q(pk__in=me_organizationinstances))
+    inactiveorgs = mru_organizationinstances.filter(pk__in=me_organizationinstances).exclude(pk__in=activeorgs)
 
-    me_org_count = OrganizationInstance.objects.filter(pk__in=me_organizationinstances).values('organization').distinct().count()
-    me_conductor_count = OrganizationInstance.objects.filter(pk__in=me_organizationinstances).values('conductors').distinct().count()
+    me_org_count = organizationinstances.filter(pk__in=me_organizationinstances).values('organization').distinct().count()
+    me_conductor_count = organizationinstances.filter(pk__in=me_organizationinstances).values('conductors').distinct().count()
     me_piece_count = Composition.objects.filter(performancepiece__organizations__in=me_organizationinstances).distinct().count()
 
     db_org_count = Organization.objects.count()
