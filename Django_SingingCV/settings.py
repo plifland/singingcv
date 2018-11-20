@@ -29,6 +29,7 @@ DEBUG = os.environ['DEBUG']
 ALLOWED_HOSTS = [
     'localhost',
 	'singingcv.azurewebsites.net',
+    '127.0.0.1',
 	]
 
 #INTERNAL_IPS = ('127.0.0.1',)
