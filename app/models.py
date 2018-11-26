@@ -3,6 +3,11 @@ from django.urls import reverse #Used to generate URLs by reversing the URL patt
 import uuid # Required for unique instances
 from django.utils import timezone
 
+# Attempt to turn off last_login DB write - isn't working yet!
+from django.contrib.auth.models import update_last_login
+from django.contrib.auth.signals import user_logged_in
+user_logged_in.disconnect(update_last_login)
+
 ### People ###
 # Base class
 class Person(models.Model):
