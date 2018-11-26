@@ -8,31 +8,39 @@
 <div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
 <div class="w3-row w3-padding-32">
 
-<div class="w3-col m6" style="padding-right:32px;">
+<div class="w3-col m5" style="padding-right:32px;">
   <h1>Performance List</h1>
   
-  {% regroup performanceinstances by date|date:"Y-m" as pi_lists %}
-  <div class="panel-group">
-    <div class="panel panel-default" style="background-color:black;">
-      {% for date, pi_list in pi_lists %}
-      <div class="panel-heading" style="color:white; background-color:black; border-bottom-width:1px; border-bottom-style:solid;">
-        <h4 class="panel-title">
-          <a data-toggle="collapse" href="#collapse{{ date }}">{{ date }}</a>
-        </h4>
+  {% regroup performanceinstances by date|date:"Y" as pi_lists %}
+  <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" style="padding-top:2px;">
+    <!-- Card : each card is a year -->
+    {% for date, pi_list in pi_lists %}
+    <div style="border-bottom:1px solid">
+      
+      <!-- Card header : years -->
+      <div class="card-header" role="tab" id="heading{{ date }}">
+        <a data-toggle="collapse" class="collapsed" href="#collapse{{ date }}" aria-expanded="false" aria-controls="collapse{{ date }}">
+          <h5 class="mb-0">{{ date }}<i class="fa fa-angle-down rotate-icon" style="float:right;"></i></h5>
+        </a>
       </div>
+      <!-- Card header -->
+
+      <!-- Card body : list of performances, ordered by date -->
       {% regroup pi_list by performance.name as p_list %}
-      <div id="collapse{{ date }}" class="panel-collapse {% if not pi_list.0.was_this_month %}collapse{% else %}in{% endif %}">
-        <ul class="list-group" style="margin-bottom:-1px">
+      <div id="collapse{{ date }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ date }}" data-parent="#accordionEx">
+        <ul class="list-group">
           {% for name, perf_list in p_list %}
-          <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px;"
+          <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px; border:none;"
               onclick="showperformancedetails({{ perf_list.0.performance.pk }}); showperformancepiecesall({{ perf_list.0.performance.pk }});">
-            <a href="#">{{ name }} ({% for org in perf_list.0.organizations.all %}{{ org.organization.name }}{% if not forloop.last %}, {% endif %}{% endfor %})</a>
+            <a href="#"><div class="large-dataheader">{{ name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
           </li>
           {% endfor %}
         </ul>
       </div>
-      {% endfor %}
+      <!-- Card body -->
     </div>
+    {% endfor %}
+    <!-- Card -->
   </div>
 </div>
 
@@ -69,8 +77,9 @@
         });
     }
 </script>
-<div class="w3-col m6" id="perfdetails" style="padding-left:32px; visibility:hidden;">
-</div>
+
+<div class="w3-col m7" id="perfdetails" style="padding-left:32px; visibility:hidden;" />
+
 </div>
 </div>
 {% endblock %}

@@ -4,9 +4,9 @@
     <h3>{{ performance.name }}</h3>
     
     <div class="w3-bar w3-black w3-card">
-    <a href="#" onclick="showperformancepiecesall({{ performance.pk }})" class="w3-bar-item w3-button w3-padding-large w3-margin-left">All</a>
+    <a href="#" onclick="showperformancepiecesall({{ performance.pk }})" class="w3-bar-item w3-button">All</a>
     {% for pi in performanceinstances %}
-    <a href="#" onclick="showperformancepieces({{ pi.pk }})" class="w3-bar-item w3-button w3-padding-large w3-margin-left">{{ pi.date }}</a>
+    <a href="#" onclick="showperformancepieces({{ pi.pk }})" class="w3-bar-item w3-button">{{ pi.date }}</a>
     {% endfor %}
     </div>
 

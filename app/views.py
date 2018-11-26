@@ -150,7 +150,7 @@ class Performances(LoginRequiredMixin, generic.View):
 
         # Gets the most recent record per organization
         #performances = Performance.objects.all()
-        performanceinstances = PerformanceInstance.objects.all()
+        performanceinstances = PerformanceInstance.objects.filter(performance__type='P')
     
         return render(
             request,
@@ -179,7 +179,7 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
 @login_required
 def performance_detail(request, pk):
     performance = Performance.objects.get(pk=pk)
-    performanceinstances = PerformanceInstance.objects.filter(performance=pk)
+    performanceinstances = PerformanceInstance.objects.filter(performance=pk).order_by('date')
     return render(
         request,
         'performancedetails.html',
