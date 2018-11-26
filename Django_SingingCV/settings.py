@@ -49,7 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'app.apps.Django_SingingCVConfig',
-    'debug_toolbar',
+    'nolastlogin',
 ]
 
 MIDDLEWARE = [
@@ -96,7 +96,9 @@ DATABASES = {
     }
 }
 
+# Let's keep sessions in cookies rather than writing into our non-concurrent DB
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+NO_UPDATE_LAST_LOGIN = True
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
