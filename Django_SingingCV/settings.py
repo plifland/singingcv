@@ -28,7 +28,7 @@ DEBUG = os.environ['DEBUG'] == 'TRUE'
 
 ALLOWED_HOSTS = [
     'localhost',
-	'singingcv.azurewebsites.net',
+	'intense-badlands-95881.herokuapp.com',
     '127.0.0.1',
 	]
 
