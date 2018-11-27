@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 
 import os
 import posixpath
+import django_heroku
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -28,7 +29,7 @@ DEBUG = os.environ['DEBUG'] == 'TRUE'
 
 ALLOWED_HOSTS = [
     'localhost',
-	'intense-badlands-95881.herokuapp.com',
+	'singingcv.herokuapp.com',
     '127.0.0.1',
 	]
 
@@ -151,3 +152,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
 LOGIN_REDIRECT_URL = '/'
+
+django_heroku.settings(locals())
