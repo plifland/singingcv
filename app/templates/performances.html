@@ -26,7 +26,7 @@
       <!-- Card header -->
 
       <!-- Card body : list of performances, ordered by date -->
-      {% regroup pi_list by performance.name as p_list %}
+      {% regroup pi_list|dictsort:"performance.name" by performance.name as p_list %}
       <div id="collapse{{ date }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ date }}" data-parent="#accordionEx">
         <ul class="list-group">
           {% for name, perf_list in p_list %}

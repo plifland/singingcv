@@ -11,8 +11,7 @@ urlpatterns = [
     path('links', login_required(views.links), name='links'),
     path('contact', views.contact, name='contact'),
     path('vocalcv', views.vocalcv, name='vocalcv'),
-    #path('guestlogin', views.guestlogin, name='guestlogin'),
-    path('guestlogin', auth_views.LoginView.as_view(template_name='guestlogin.html'), name='guestlogin'),
+    path('guestlogin', auth_views.LoginView.as_view(template_name='registration/login.html'), name='guestlogin'),
 
     path('performances', views.Performances.as_view(), name='performances'),
     path('performances?<int:pk>&<int:pi>', views.PerformancesSpecific.as_view(), name='performances-specific'),

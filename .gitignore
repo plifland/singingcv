@@ -16,3 +16,5 @@ __pycache__
 local_settings.py
 /app/migrations
 /db_backup.sqlite3
+/db.sqlite3-wal
+/db.sqlite3-shm
