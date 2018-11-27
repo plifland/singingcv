@@ -30,10 +30,9 @@ DEBUG = os.environ['DEBUG'] == 'TRUE'
 ALLOWED_HOSTS = [
     'localhost',
 	'singingcv.herokuapp.com',
-    '127.0.0.1',
 	]
 
-#INTERNAL_IPS = ('127.0.0.1',)
+INTERNAL_IPS = ('127.0.0.1',)
 
 # Application definition
 
@@ -49,7 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    #'app.apps.Django_SingingCVConfig',
+    'app.apps.Django_SingingCVConfig',
 ]
 
 MIDDLEWARE = [
