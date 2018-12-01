@@ -87,13 +87,29 @@ WSGI_APPLICATION = 'Django_SingingCV.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#        'OPTIONS': { 'timeout': 5, },
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        'OPTIONS': { 'timeout': 5, },
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'singingcv',
+        'USER': 'postgres',
+        'PASSWORD': 'hopfield',
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
+
+# Heroku: Update database configuration from $DATABASE_URL.
+import dj_database_url
+db_from_env = dj_database_url.config(conn_max_age=500)
+DATABASES['default'].update(db_from_env)
 
 # Let's keep sessions in cookies rather than writing into our non-concurrent DB
 SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'

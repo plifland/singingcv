@@ -21,12 +21,14 @@ from .forms import ContactForm, GenreForm, OrganizationInstanceForm, Composition
 @login_required
 def vocalcv(request):
     # Find me as a singer!
-    me_singer = Singer.objects.get(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
-    me_singer_pk = me_singer.pk
+    me_singer = Singer.objects.filter(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
+    me_singer_pk = []
+    for s in me_singer:
+        me_singer_pk.append(s.pk)
 
     # My organizations
     organizationinstances = OrganizationInstance.objects.all()
-    me_organizationinstances = list(chain(organizationinstances.filter(singerspaid=me_singer_pk).values_list('id', flat=True), organizationinstances.filter(singersvolunteer=me_singer_pk).values_list('id', flat=True)))
+    me_organizationinstances = list(chain(organizationinstances.filter(singerspaid__in=me_singer_pk).values_list('id', flat=True), organizationinstances.filter(singersvolunteer__in=me_singer_pk).values_list('id', flat=True)))
 
     # Gets the most recent record per organization
     orgs = Organization.objects.values('id').annotate(maxdate=Max('organizationinstance__start'))
