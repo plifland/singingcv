@@ -223,11 +223,13 @@ def performance_pieces_all(request, pk):
 @login_required
 def rep_list(request):
     # Find me as a singer!
-    me_singer = Singer.objects.get(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
-    me_singer_pk = me_singer.pk
+    me_singer = Singer.objects.filter(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
+    me_singer_pk = []
+    for s in me_singer:
+        me_singer_pk.append(s.pk)
 
     # My organizations
-    me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid=me_singer_pk) | Q(singersvolunteer=me_singer_pk))
+    me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid__in=me_singer_pk) | Q(singersvolunteer__in=me_singer_pk))
 
     pieces = PerformancePiece.objects.filter(organizations__in=me_organizationinstances)
 

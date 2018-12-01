@@ -1,0 +1,17 @@
+Steps to migrate to a new DB
+
+(1) Open cmd prompt or powershell in the visual studio environment
+(1a) Right-click environment, open in ...
+
+(2) Navigate to project root
+
+(3) python manage.py dumpdata --natural-primary --natural-foreign > dump.json
+(3a) I had to comment the environment variables (secretkey, debug, etc) as they didn't exist
+
+(4) Change DATABASES in settings.py to point to the new db
+
+(5) python manage.py migrate (or use the migrate function in VS)
+
+(6) Open dump.json in notepad++, change encoding to UTF-8, and save
+
+(7) manage.py loaddata dump.json
