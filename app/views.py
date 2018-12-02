@@ -47,11 +47,14 @@ def vocalcv(request):
     inactiveorgs = mru_organizationinstances.filter(pk__in=me_organizationinstances).exclude(pk__in=activeorgs)
 
     me_org_count = organizationinstances.filter(pk__in=me_organizationinstances).values('organization').distinct().count()
+    me_composer_count = organizationinstances.filter(pk__in=me_organizationinstances).values('performancepiece__composition__composer').distinct().count()
     me_conductor_count = organizationinstances.filter(pk__in=me_organizationinstances).values('conductors').distinct().count()
     me_piece_count = Composition.objects.filter(performancepiece__organizations__in=me_organizationinstances).distinct().count()
 
     db_org_count = Organization.objects.count()
+    db_composer_count = Composer.objects.count()
     db_conductor_count = Conductor.objects.count()
+    db_singer_count = Singer.objects.values('person').count()
     db_piece_count = Composition.objects.count()
     
     return render(
@@ -61,10 +64,13 @@ def vocalcv(request):
             'activeorgs':activeorgs,
             'inactiveorgs':inactiveorgs,
             'me_org_count':me_org_count,
+            'me_composer_count':me_composer_count,
             'me_conductor_count':me_conductor_count,
             'me_piece_count':me_piece_count,
             'db_org_count':db_org_count,
+            'db_composer_count':db_composer_count,
             'db_conductor_count':db_conductor_count,
+            'db_singer_count':db_singer_count,
             'db_piece_count':db_piece_count,
             },
     )
@@ -327,21 +333,6 @@ def org_details(request, pk):
 class OrganizationListView(LoginRequiredMixin, generic.ListView):
     model = Organization
     template_name = 'orglist.html'
-#class OrganizationDetailView(generic.DetailView):
-#    #model = Organization
-#    context_object_name = 'orgdetail_list'
-#    template_name = 'orgdetail.html'
-    
-#    def get_queryset(self):
-#        self.organization = get_object_or_404(Organization, id=self.kwargs.get('pk'))
-#        return Organization.objects.filter(id = self.kwargs.get('pk'))
-    
-#    def get_context_data(self, **kwargs):
-#        context = super(OrganizationDetailView, self).get_context_data(**kwargs)
-#        context['organization'] = Organization.objects.all()
-#        context['performance'] = Performance.objects.filter(organization = self.organization)
-#        # And so on for more models
-#        return context
 
 ### Autocomplete views
 from dal import autocomplete
@@ -352,6 +343,7 @@ from functools import reduce
 from operator import __or__ as OR
 from django.db.models import CharField, Value
 from django.db.models.functions import Concat
+import unidecode
 
 ### Self-written autocomplete url - responds to a url with a list of organizations formatted in JSON for the DAL (django autocomplete light) views
 ### Example testing url: organization-autocomplete/?q=b
@@ -431,7 +423,7 @@ class OrganizationInstanceAutocomplete(autocomplete.Select2QuerySetView):
                 qs = qs.filter(id__in = [o.id for o in performance.first().organizations.all()])
 
         if self.q:
-            qs = qs.filter(organization__name__contains=self.q)
+            qs = qs.filter(organization__name__icontains=self.q)
 
         return qs
 class PersonAutocomplete(generic.View):
@@ -535,7 +527,8 @@ class ComposerAutocomplete(autocomplete.Select2QuerySetView):
         qs = Composer.objects.all()
 
         if self.q:
-            qs = qs.filter(Q(person__lastname__istartswith=self.q) | Q(person__firstname__istartswith=self.q))
+            q = unidecode.unidecode(self.q)
+            qs = qs.filter(Q(person__lastname__istartswith=q) | Q(person__firstname__istartswith=q))
 
         return qs
 class ConductorAutocomplete(autocomplete.Select2QuerySetView):
@@ -596,7 +589,7 @@ class CompositionAutocomplete(autocomplete.Select2QuerySetView):
         qs = Composition.objects.all()
 
         if self.q:
-            qs = qs.filter(title__contains=self.q)
+            qs = qs.filter(title__icontains=self.q)
 
         return qs
 class PerformanceAutocomplete(generic.View):
@@ -608,7 +601,7 @@ class PerformanceAutocomplete(generic.View):
 
         q = self.request.GET.get('q')
         if q:
-            qs = qs.filter(Q(performance__name__contains=q) | Q(performance__name__contains=q))
+            qs = qs.filter(Q(performance__name__icontains=q) | Q(performance__name__icontains=q))
 
         performances = {}
         for p in qs:
@@ -669,7 +662,7 @@ class PerformanceInstanceAutocomplete(autocomplete.Select2QuerySetView):
         qs = PerformanceInstance.objects.all()
 
         if self.q:
-            qs = qs.filter(performance__name__contains=self.q)
+            qs = qs.filter(performance__name__icontains=self.q)
 
         return qs
 

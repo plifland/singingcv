@@ -15,3 +15,9 @@ Steps to migrate to a new DB
 (6) Open dump.json in notepad++, change encoding to UTF-8, and save
 
 (7) manage.py loaddata dump.json
+
+
+Heroku Pull-Push
+PGUSER=postgres
+PGPASSWORD=password
+heroku pg:pull HEROKU_POSTGRESQL_MAGENTA mylocaldb --app singingcv

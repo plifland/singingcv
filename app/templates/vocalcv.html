@@ -4,37 +4,51 @@
 <h1>Peter Lifland - CV</h1>
 
 <div class="w3-row w3-padding-32">
-	<div class="w3-col m4" style="padding-left:100px;">
-	    <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:10px">
-	  
-        {% block sidebar %}
-        <!--<ul class="sidebar-nav">
-            <li><a href="{% url 'vocalcv' %}">Home</a></li>
-            <li><a href="{% url 'organizations' %}">All organizations</a></li>
-            <li><a href="">All conductors</a></li>
-            <li><a href="">All composers</a></li>
-            <li><a href="">All pieces</a></li>
-        </ul>-->
-        {% endblock %}
-    </div>
-    <div class="w3-col m8">
-        <p>Welcome to my CV, where I record where and what I sing!</p>
-        
-        <p>Present organizations:</p>
-        <ul>
-        {% for organization in activeorgs %}
-        <li>{{ organization.organization.name }} - {% for con in organization.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
-        {% endfor %}
-        </ul>
+	<div class="w3-col m5" style="padding-left:60px; padding-right:40px;">
+	    <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:10px;margin-left:40px;">
 
-        <p>Past organizations:</p>
-        <ul>
-        {% for organization in inactiveorgs %}
-        <li>{{ organization.organization.name }} - {% for con in organization.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</li>
+        <h3 style="margin-top:20px;">Present organizations:</h3>
+        <div>
+        {% for organization in activeorgs %}
+        <div class="large-dataheader" style="margin-top:10px;">
+            <a href="{% url 'organization-detail-name' pk=organization.organization %}">{{ organization.organization.name }}</a>
+            {% for con in organization.conductors.all %}<div class="small-subdata">{{ con.person.get_full_name }}</div>{% endfor %}
+        </div>
         {% endfor %}
-        </ul>
-  
-        <p style="padding-top:20px;">Fun aggregate stats</p>
+        </div>
+
+        <h3 style="margin-top:20px;">Past organizations:</h3>
+        <div>
+        {% for organization in inactiveorgs %}
+        <div class="large-dataheader" style="margin-top:10px;">
+            <a href="{% url 'organization-detail-name' pk=organization.organization %}">{{ organization.organization.name }}</a>
+            {% for con in organization.conductors.all %}<div class="small-subdata">{{ con.person.get_full_name }}</div>{% endfor %}
+        </div>
+        {% endfor %}
+        </div>
+    </div>
+    <div class="w3-col m7">
+        <p>Welcome to my CV, where I record where and what I sing!</p>
+
+        <p>This is an active and growing collection - so far I have input from the present (2018) back to about mid-2016. Even that is incomplete though with more data entry to come!</p>
+
+        <h3 style="margin-top:20px;">FAQ</h3>
+        <p>Q: What is this exactly?</p>
+        <p>A: This is a searchable, queryable history of everything I have ever sung. Or at least it will be once I get a lot more data entry done!</p>
+
+        <p>Q: Why are you doing this? What is this for?</p>
+        <p>A: I realized that I was getting bad at answering the question "have you done &lt;this piece&gt; before?". And I find it quite fun to look back at all the awesome opportunities I have had!</p>
+        
+        <p>Q: Why does this look terrible on my phone?</p>
+        <p>A: Phone-size screen support is coming! Give me a few months.</p>
+
+        <p>Q: I don't want to appear in your database. How do I get out?</p>
+        <p>A: Because of the login requirement, this website shouldn't show up for any web searches for your name, so hopefully being listed here is pretty harmless! I am more than happy to remove you or edit your name to a pseudonym on request regardless though. Just use the contact form to reach out to me with your desired action.</p>
+
+        <p>Q: I want one of these for myself! How do I get one?</p>
+        <p>A: Just kidding, no one has asked this question.</p>
+        
+        <h3 style="margin-top:20px;">Fun stats</h3>
         <table>
             <tr>
                 <td style="width:120px;"></td>
@@ -47,9 +61,19 @@
                 <td style="text-align:center;">{{ db_org_count }}</td>
             </tr>
             <tr>
+                <td><strong>Singers:</strong></td>
+                <td style="text-align:center;">--</td>
+                <td style="text-align:center;">{{ db_singer_count }}</td>
+            </tr>
+            <tr>
                 <td><strong>Conductors:</strong></td>
                 <td style="text-align:center;">{{ me_conductor_count }}</td>
                 <td style="text-align:center;">{{ db_conductor_count }}</td>
+            </tr>
+            <tr>
+                <td><strong>Composers:</strong></td>
+                <td style="text-align:center;">{{ me_composer_count }}</td>
+                <td style="text-align:center;">{{ db_composer_count }}</td>
             </tr>
             <tr>
                 <td><strong>Pieces:</strong></td>
