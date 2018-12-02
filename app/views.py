@@ -172,7 +172,7 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
 
         # Gets the most recent record per organization
         #performances = Performance.objects.all()
-        performanceinstances = PerformanceInstance.objects.all()
+        performanceinstances = PerformanceInstance.objects.filter(performance__type='P')
     
         context={
             'performanceinstances':performanceinstances,
@@ -270,10 +270,10 @@ def rep_list(request):
             performances = {}
             piecesdict[p.composition.pk] = {'composer':str(p.composition.composer), 'title':p.composition.title, 'performances':performances}
         # Add on performances - will dedupe later!
-        for o in p.organizations.all():
-            if o.organization.pk in piecesdict[p.composition.pk]['performances']:
+        for o in p.organizations.filter(pk__in=me_organizationinstances).all():
+            if o.organization.name in piecesdict[p.composition.pk]['performances']:
                 piecesdict[p.composition.pk]['performances'][o.organization.name].append(p.performanceinstance.date.year)
-                piecesdict[p.composition.pk]['performances'][o.organization.name] = sorted(set(piecesdict[p.composition.pk]['performances'][o.organization.pk]))
+                piecesdict[p.composition.pk]['performances'][o.organization.name] = sorted(set(piecesdict[p.composition.pk]['performances'][o.organization.name]))
             else:
                 piecesdict[p.composition.pk]['performances'][o.organization.name] = [p.performanceinstance.date.year]
 
