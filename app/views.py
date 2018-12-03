@@ -226,71 +226,74 @@ def performance_pieces_all(request, pk):
         {'pieces':pieces_grouped},
     )
 
+from django.db import connection
+from django.contrib.postgres.aggregates import ArrayAgg,StringAgg
+
 @login_required
 def rep_list(request):
     # Find me as a singer!
-    me_singer = Singer.objects.filter(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland'))
-    me_singer_pk = []
-    for s in me_singer:
-        me_singer_pk.append(s.pk)
+    me_singer_pk = list(Singer.objects.filter(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland')).values_list('pk', flat=True))
 
     # My organizations
-    me_organizationinstances = OrganizationInstance.objects.filter(Q(singerspaid__in=me_singer_pk) | Q(singersvolunteer__in=me_singer_pk))
+    me_organizationinstances = list(OrganizationInstance.objects.filter(Q(singerspaid__in=me_singer_pk) | Q(singersvolunteer__in=me_singer_pk)).values_list('pk', flat=True))
 
-    pieces = PerformancePiece.objects.filter(organizations__in=me_organizationinstances)
+    pieces = Composition.objects.filter(performancepiece__organizations__in=me_organizationinstances).distinct()
 
     ### Filters
     composer = request.GET.get('composer')
     if composer:
         try:
             composerint = int(composer)
-            pieces = pieces.filter(composition__composer=composer)
+            pieces = pieces.filter(composer=composer)
         except:
             ## Hopefully we have a "Lastname, Firstname" string at this point
             try:
                 (lastname, firstname) = composer.split(', ')
                 #firstname = firstname[1:] # remove the space
-                pieces = pieces.filter(Q(composition__composer__person__firstname=firstname) & Q(composition__composer__person__lastname=lastname))
+                pieces = pieces.filter(Q(composer__person__firstname=firstname) & Q(composer__person__lastname=lastname))
             except ValueError:
                 pieces = pieces
     org = request.GET.get('org')
     if org:
-        pieces = pieces.filter(organizations__organization=org)
+        pieces = pieces.filter(performancepiece__organizations__organization=org)
     year = request.GET.get('year')
     if year:
-        pieces = pieces.filter(performanceinstance__date__year=year)
+        pieces = pieces.filter(performancepiece__performanceinstance__date__year=year)
     era = request.GET.get('era')
     if era:
-        pieces = pieces.filter(composition__tags=era)
+        pieces = pieces.filter(tags=era)
 
-    piecesdict = {}
-    for p in pieces:
-        # New piece
-        if not p.composition.pk in piecesdict:
-            performances = {}
-            piecesdict[p.composition.pk] = {'composer':str(p.composition.composer), 'title':p.composition.title, 'performances':performances}
-        # Add on performances - will dedupe later!
-        for o in p.organizations.filter(pk__in=me_organizationinstances).all():
-            if o.organization.name in piecesdict[p.composition.pk]['performances']:
-                piecesdict[p.composition.pk]['performances'][o.organization.name].append(p.performanceinstance.date.year)
-                piecesdict[p.composition.pk]['performances'][o.organization.name] = sorted(set(piecesdict[p.composition.pk]['performances'][o.organization.name]))
-            else:
-                piecesdict[p.composition.pk]['performances'][o.organization.name] = [p.performanceinstance.date.year]
+    pieces = pieces.annotate(orgs=ArrayAgg('performancepiece__organizations__organization__name',distinct=True))
+    #pieces = pieces.annotate(years=ArrayAgg('performancepiece__performanceinstance__get_year',distinct=True))
+    pieces = pieces.order_by('composer','title')
 
-    sorteddict = sorted(piecesdict.items(), key = lambda v: (v[1]['composer'], v[1]['title']))
+    paginator = Paginator(pieces, 20) # Show 20 pieces per page
+    page = request.GET.get('page', 1)
+    try:
+        pieces_page = paginator.get_page(page)
+    except PageNotAnInteger:
+        pieces_page = paginator.get_page(1)
+    except EmptyPage:
+        pieces_page = paginator.get_page(paginator.num_pages)
 
-    paginator = Paginator(sorteddict, 20) # Show 20 pieces per page
-    page = request.GET.get('page')
-    pieces_page = paginator.get_page(page)
+    filterform = RepListFiltersForm
 
-    form = RepListFiltersForm
+    querycount = 0
+    querytime = 0
+    for q in connection.queries:
+        querycount += 1
+        querytime += float(q['time'])
+        print(q)
+        print('\n')
+    print("QueryCount: " + str(querycount))
+    print("Time: " + str(querytime))
 
     return render(
         request,
         'replist.html',
         {
-            'pieces':pieces_page
-            ,'form':form
+            'pieces':pieces_page,
+            'form':filterform,
          },
     )
 

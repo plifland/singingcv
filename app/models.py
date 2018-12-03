@@ -177,6 +177,9 @@ class PerformanceInstance(models.Model):
     def __str__(self):
         return '{0} - {1} - {2}'.format(self.performance.name, self.date, self.venue)
 
+    def get_year(self):
+        return self.date.year
+
     def was_this_year(self):
         now = timezone.now()
         if now.year == self.date.year:

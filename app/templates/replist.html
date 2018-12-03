@@ -13,11 +13,11 @@
             <th style="width:400px; padding-left:12px; padding-right:24px;">Title</th>
             <th style="width:200px;">Performances</th>
         </tr>
-    {% for pk,p in pieces %}
+    {% for p in pieces %}
         <tr>
             <td style="padding-top:5px;"><a href="{% url 'replist' %}?composer={{ p.composer }}">{{ p.composer }}</a></td>
-            <td style="padding-top:5px; padding-left:12px; padding-right:24px;">{{ p.title }}</td>
-            <td style="padding-top:5px; font-size:90%; line-height:100%;">{% for o,d in p.performances.items %}{{ o }} ({% for y in d %}{{ y }}{% if not forloop.last %}, {% endif %}{% endfor %}){% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
+            <td style="padding-top:5px; padding-left:12px; padding-right:24px;">{{ p.title }}{{ p.years }}</td>
+            <td style="padding-top:5px; font-size:90%; line-height:100%;">{{ p.orgs|safe }}</td>
         </tr>
     {% endfor %}
     </table>
