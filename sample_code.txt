@@ -1,0 +1,11 @@
+# Analyzing SQL queries for a view
+from django.db import connection
+querycount = 0
+querytime = 0
+for q in connection.queries:
+    querycount += 1
+    querytime += float(q['time'])
+    print(q)
+    print('\n')
+print("QueryCount: " + str(querycount))
+print("Time: " + str(querytime))

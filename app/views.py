@@ -226,10 +226,6 @@ def performance_pieces_all(request, pk):
         {'pieces':pieces_grouped},
     )
 
-from django.db import connection
-from django.contrib.postgres.aggregates import ArrayAgg,StringAgg
-from django.db.models.functions import TruncYear
-
 @login_required
 def rep_list(request):
     # Find me as a singer!
@@ -327,16 +323,6 @@ def rep_list(request):
         pieces_page = paginator.get_page(paginator.num_pages)
 
     filterform = RepListFiltersForm
-
-    querycount = 0
-    querytime = 0
-    for q in connection.queries:
-        querycount += 1
-        querytime += float(q['time'])
-        print(q)
-        print('\n')
-    print("QueryCount: " + str(querycount))
-    print("Time: " + str(querytime))
 
     return render(
         request,
