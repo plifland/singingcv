@@ -119,6 +119,7 @@ class Organization(models.Model):
 
     city = models.CharField(max_length=200, default="Unknown", help_text="Enter an organization city ([City, State] preferred)")
     url = models.URLField(max_length=200, default="Unknown", help_text="Enter an organization url")
+    showinmainorgslist = models.BooleanField(default=True)
     
     def __str__(self):
         return self.name

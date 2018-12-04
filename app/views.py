@@ -43,8 +43,8 @@ def vocalcv(request):
     #        performance_orgs.append(org.organization.id)
     #performance_orgs = list(set(performance_orgs))
     performance_orgs = list(set(performances.values_list('organizations__organization', flat=True)))
-    activeorgs = mru_organizationinstances.filter(Q(organization__in=performance_orgs) & Q(pk__in=me_organizationinstances))
-    inactiveorgs = mru_organizationinstances.filter(pk__in=me_organizationinstances).exclude(pk__in=activeorgs)
+    activeorgs = mru_organizationinstances.filter(Q(organization__in=performance_orgs) & Q(pk__in=me_organizationinstances)).filter(organization__showinmainorgslist=True)
+    inactiveorgs = mru_organizationinstances.filter(pk__in=me_organizationinstances).filter(organization__showinmainorgslist=True).exclude(pk__in=activeorgs)
 
     me_org_count = organizationinstances.filter(pk__in=me_organizationinstances).values('organization').distinct().count()
     me_composer_count = organizationinstances.filter(pk__in=me_organizationinstances).values('performancepiece__composition__composer').distinct().count()
