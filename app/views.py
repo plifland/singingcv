@@ -236,9 +236,9 @@ def rep_list(request):
     me_singer_pk = list(Singer.objects.filter(Q(person__firstname = 'Peter') & Q(person__lastname = 'Lifland')).values_list('pk', flat=True))
 
     # My organizations
-    me_organizationinstances = list(OrganizationInstance.objects.filter(Q(singerspaid__in=me_singer_pk) | Q(singersvolunteer__in=me_singer_pk)).values_list('pk', flat=True))
+    me_organizationinstances = list(OrganizationInstance.objects.filter(Q(singerspaid__in=me_singer_pk) | Q(singersvolunteer__in=me_singer_pk)).values_list('pk', flat=True).distinct().order_by())
 
-    pieces = Composition.objects.filter(performancepiece__organizations__in=me_organizationinstances).distinct()
+    pieces = Composition.objects.filter(performancepiece__organizations__in=me_organizationinstances).distinct().order_by()
 
     ### Filters
     composer = request.GET.get('composer')
