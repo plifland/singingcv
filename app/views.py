@@ -1,6 +1,6 @@
 import datetime
 
-from django.db.models import Max,Q,Count
+from django.db.models import Max,Q,Count,F,CharField,Value as V
 from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
 from django.core.mail import EmailMessage, send_mail
@@ -228,6 +228,7 @@ def performance_pieces_all(request, pk):
 
 from django.db import connection
 from django.contrib.postgres.aggregates import ArrayAgg,StringAgg
+from django.db.models.functions import TruncYear
 
 @login_required
 def rep_list(request):
@@ -249,7 +250,6 @@ def rep_list(request):
             ## Hopefully we have a "Lastname, Firstname" string at this point
             try:
                 (lastname, firstname) = composer.split(', ')
-                #firstname = firstname[1:] # remove the space
                 pieces = pieces.filter(Q(composer__person__firstname=firstname) & Q(composer__person__lastname=lastname))
             except ValueError:
                 pieces = pieces
@@ -263,9 +263,59 @@ def rep_list(request):
     if era:
         pieces = pieces.filter(tags=era)
 
-    pieces = pieces.annotate(orgs=ArrayAgg('performancepiece__organizations__organization__name',distinct=True))
-    #pieces = pieces.annotate(years=ArrayAgg('performancepiece__performanceinstance__get_year',distinct=True))
-    pieces = pieces.order_by('composer','title')
+    filteredpieces = list(pieces.values_list('pk', flat=True))
+
+    pieces = Composition.objects.raw("""
+        SELECT
+	        app_composition.id
+	        ,app_composition.title
+	        ,app_composition.composer_id
+            ,CONCAT(app_person.lastname, \' \', app_person.firstname) AS composer_name
+	        ,STRING_AGG(CONCAT(comp_orgs.org, \' (\', years, \')\'),\'<br />\') AS orgs
+        FROM
+	        app_composition
+	        INNER JOIN (
+		        SELECT
+			        composition_id
+			        ,org
+			        ,STRING_AGG(year, \',\') AS years
+		        FROM (
+			        SELECT DISTINCT
+				        app_performancepiece.composition_id
+				        ,app_organization.name AS org
+				        ,CAST(date_part('year', app_performanceinstance.date) AS varchar) AS year
+			        FROM
+				        app_performancepiece
+				        INNER JOIN app_performancepiece_organizations ON app_performancepiece_organizations.performancepiece_id = app_performancepiece.id
+				        INNER JOIN app_organizationinstance ON app_organizationinstance.id = app_performancepiece_organizations.organizationinstance_id
+				        INNER JOIN app_organization ON app_organization.id = app_organizationinstance.organization_id
+				        INNER JOIN app_performanceinstance ON app_performanceinstance.id = app_performancepiece.performanceinstance_id
+                    WHERE
+                        app_performancepiece.composition_id = ANY(%s)
+                        AND app_organizationinstance.id = ANY(%s)
+			        ORDER BY
+				        composition_id
+				        ,org
+				        ,year
+			        ) AS comp_org_year
+		        GROUP BY
+			        composition_id
+			        ,org
+		        ORDER BY
+			        composition_id
+			        ,org
+		        ) AS comp_orgs ON app_composition.id = comp_orgs.composition_id
+            INNER JOIN app_composer ON app_composer.id = app_composition.composer_id
+            INNER JOIN app_person ON app_person.id = app_composer.person_id
+        GROUP BY
+	        app_composition.id
+	        ,app_composition.title
+	        ,app_composition.composer_id
+            ,CONCAT(app_person.lastname, \' \', app_person.firstname)
+        ORDER BY
+	        composer_name
+	        ,title
+    """, params=[filteredpieces, me_organizationinstances])
 
     paginator = Paginator(pieces, 20) # Show 20 pieces per page
     page = request.GET.get('page', 1)
