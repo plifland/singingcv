@@ -340,7 +340,7 @@ class Composition(models.Model):
         (CZECH, 'Czech'),
         (DANISH, 'Danish'),
         (DUTCH, 'Dutch'),
-        (ESTONIAN, 'Estonian')
+        (ESTONIAN, 'Estonian'),
         (FINNISH, 'Finnish'),
         (FRENCH, 'French'),
         (GEORGIAN, 'Georgian'),
