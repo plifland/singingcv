@@ -301,6 +301,7 @@ class Composition(models.Model):
     DANISH = 'DA'
     DUTCH = 'NL'
     ENGLISH = 'EN'
+    ESTONIAN = 'ET'
     FINNISH = 'FI'
     FRENCH = 'FR'
     GEORGIAN = 'KA'
@@ -339,6 +340,7 @@ class Composition(models.Model):
         (CZECH, 'Czech'),
         (DANISH, 'Danish'),
         (DUTCH, 'Dutch'),
+        (ESTONIAN, 'Estonian')
         (FINNISH, 'Finnish'),
         (FRENCH, 'French'),
         (GEORGIAN, 'Georgian'),

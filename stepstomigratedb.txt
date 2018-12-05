@@ -18,6 +18,6 @@ Steps to migrate to a new DB
 
 
 Heroku Pull-Push
-PGUSER=postgres
-PGPASSWORD=password
+set PGUSER=postgres
+set PGPASSWORD=password
 heroku pg:pull HEROKU_POSTGRESQL_MAGENTA mylocaldb --app singingcv

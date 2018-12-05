@@ -32,7 +32,7 @@
           {% for name, perf_list in p_list %}
           <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px; border:none;"
               onclick="showperformancedetails({{ perf_list.0.performance.pk }}); showperformancepiecesall({{ perf_list.0.performance.pk }});">
-            <a href="#"><div class="large-dataheader">{{ name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
+            <a href="#"><div class="large-dataheader" style="line-height:100%">{{ name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
           </li>
           {% endfor %}
         </ul>
