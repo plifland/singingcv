@@ -29,10 +29,12 @@ admin.site.register(Genre, GenreAdmin)
 
 class OrganizationInstanceAdmin(admin.ModelAdmin):
     form = OrganizationInstanceForm
+    save_as = True
 admin.site.register(OrganizationInstance, OrganizationInstanceAdmin)
 
 class PerformanceInstanceAdmin(admin.ModelAdmin):
     form = PerformanceInstanceForm
+    save_as = True
 admin.site.register(PerformanceInstance, PerformanceInstanceAdmin)
 
 class PerformancePieceAdmin(admin.ModelAdmin):
