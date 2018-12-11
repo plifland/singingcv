@@ -21,8 +21,8 @@
 		    </div>
 		    <div style="display:inline-block; height:65px; margin-left: 10px;">
 			    <p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px; max-width:280px; white-space: nowrap;">{{ prf.performance.name }}</p>
-			    <p style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px; max-width:280px; white-space: nowrap; overflow: hidden;">{% for org in prf.organizations.all %}{{ org.organization.name }} - {% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endfor %}</p>
-			    <p style="margin:0px; line-height:1em;">{{ prf.venue }}, {{ prf.city }}</p>
+			    <p style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px; max-width:280px; white-space: nowrap; overflow: hidden;">{% with prf.organizations.all|first as org %}{{ org.organization.name }} - {% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endwith %}</p>
+			    <p style="margin:0px; line-height:1em; max-width:280px; white-space: nowrap; overflow: hidden;">{{ prf.venue }}, {{ prf.city }}</p>
 		    </div>
 	    </div>
         {% endfor %}
