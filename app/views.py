@@ -369,6 +369,24 @@ def org_details(request, pk):
         }
     return render(request, 'orgdetail.html', context)
 
+@login_required
+def composition_details(request, pk):
+    try:
+        pk = int(pk)
+    except:
+        return
+
+    # Get the composition - there should only ever be one since we have a primary key
+    composition = Composition.objects.get(pk=pk)
+
+    performances = PerformancePiece.objects.filter(composition=composition)
+
+    context = {
+        'composition':composition,
+        'performances':performances,
+        }
+    return render(request, 'compositiondetail.html', context)
+
 class OrganizationListView(LoginRequiredMixin, generic.ListView):
     model = Organization
     template_name = 'orglist.html'

@@ -1,0 +1,56 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
+<div class="w3-row">
+  <h1>{{ composition.title }}</h1>
+  <h2>{% if not composition.composer %}Anon.{% endif %}{{ composition.composer }}</h2>
+  {% if composition.arranger %}<h2>Arr. {{ composition.arranger }}</h2>{% endif %}
+  <h3>{{ composition.year }}</h3>
+
+  <div style="padding-top:20px; font-size:110%;">
+    Voicing: {{ composition.get_voicing_display }}<br />
+    Accompaniment: {{ composition.get_accompaniment_display }}<br />
+    Language: {{ composition.get_language_display }}<br />
+  </div>
+
+<script language="javascript">
+    $(function() {
+        $('.trimname a').each(function (index, item) {
+            var len_item = $(item).html().replace("<br />", "\r\n").split(/\r?\n/)[0].trim().length;
+            if (len_item > 40)
+                $(item).parent().css("font-size", "70%");
+            else if (len_item > 30)
+                $(item).parent().css("font-size", "80%");
+            else if (len_item > 20)
+                $(item).parent().css("font-size", "90%");
+        });
+    });
+</script>
+
+  <div style="padding-top:30px">
+    <h4>Performances</h4>
+
+	<table>
+	<tr>
+        <th style="font-size:115%; font-weight:200; padding-bottom:5px;">Organization</th>
+        <th style="padding-left:25px; font-size:115%; font-weight:200; padding-bottom:5px;">Name</th>
+		<th style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Date</th>
+		<th style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Location</th>
+		<th style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Venue</th>
+	</tr>
+	{% for pp in performances %}
+    <tr>
+        <td class="trimname">{% for org in pp.organizations.all %}<a href="{% url 'organization-detail-name' pk=org.organization %}">{{ org.organization.name }}</a>{% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
+		<td class="trimname" style="padding-left:25px; max-width:300px;"><a href="{% url 'performances-specific' pk=pp.performanceinstance.performance.pk pi=pp.performanceinstance.pk  %}">{{ pp.performanceinstance.performance.name }}</a></td>
+        <td style="padding-left:25px;">{{ pp.performanceinstance.date|date:"b d, Y"|title }}</td>
+		<td style="padding-left:25px;">{{ pp.performanceinstance.city }}</td>
+		<td style="padding-left:25px;">{{ pp.performanceinstance.venue }}</td>
+	</tr>
+    {% endfor %}
+	</table>
+  </div>
+
+</div>
+</div>
+{% endblock %}

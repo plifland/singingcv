@@ -16,7 +16,7 @@
     {% for p in pieces %}
         <tr>
             <td style="padding-top:5px;"><a href="{% url 'replist' %}?composer={{ p.composer }}">{{ p.composer }}</a></td>
-            <td style="padding-top:5px; padding-left:12px; padding-right:24px;">{{ p.title }}{{ p.years }}</td>
+            <td style="padding-top:5px; padding-left:12px; padding-right:24px;"><a href="{% url 'composition-detail' pk=p.id %}">{{ p.title }}</a></td>
             <td style="padding-top:5px; font-size:80%; line-height:100%;">{{ p.orgs|safe }}</td>
         </tr>
     {% endfor %}
