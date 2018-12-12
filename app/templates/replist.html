@@ -1,6 +1,20 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
+<script language="javascript">
+    $(function() {
+        $('.trimtitle a').each(function (index, item) {
+            var len_item = $(item).html().replace("<br />", "\r\n").split(/\r?\n/)[0].trim().length;
+            if (len_item > 70)
+                $(item).parent().css("font-size", "70%");
+            else if (len_item > 60)
+                $(item).parent().css("font-size", "80%");
+            else if (len_item > 50)
+                $(item).parent().css("font-size", "90%");
+        });
+    });
+</script>
+
 <div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="replist">
 <div class="w3-row w3-padding-16">
 
@@ -16,7 +30,7 @@
     {% for p in pieces %}
         <tr>
             <td style="padding-top:5px;"><a href="{% url 'replist' %}?composer={{ p.composer }}">{{ p.composer }}</a></td>
-            <td style="padding-top:5px; padding-left:12px; padding-right:24px;"><a href="{% url 'composition-detail' pk=p.id %}">{{ p.title }}</a></td>
+            <td class="trimtitle" style="padding-top:5px; padding-left:12px; padding-right:24px;"><a href="{% url 'composition-detail' pk=p.id %}">{{ p.title }}</a></td>
             <td style="padding-top:5px; font-size:80%; line-height:100%;">{{ p.orgs|safe }}</td>
         </tr>
     {% endfor %}
