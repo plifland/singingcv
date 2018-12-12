@@ -241,12 +241,12 @@ def rep_list(request):
     if composer:
         try:
             composerint = int(composer)
-            pieces = pieces.filter(composer=composer)
+            pieces = pieces.filter(Q(composer=composer) | Q(arranger=composer))
         except:
             ## Hopefully we have a "Lastname, Firstname" string at this point
             try:
                 (lastname, firstname) = composer.split(', ')
-                pieces = pieces.filter(Q(composer__person__firstname=firstname) & Q(composer__person__lastname=lastname))
+                pieces = pieces.filter((Q(composer__person__firstname=firstname) & Q(composer__person__lastname=lastname)) | (Q(arranger__person__firstname=firstname) & Q(arranger__person__lastname=lastname)))
             except ValueError:
                 pieces = pieces
     org = request.GET.get('org')
@@ -265,8 +265,21 @@ def rep_list(request):
         SELECT
 	        app_composition.id
 	        ,app_composition.title
-	        ,app_composition.composer_id
-            ,CONCAT(app_person.lastname, \' \', app_person.firstname) AS composer_name
+	        ,COALESCE(app_composer.id, app_arranger.id) AS composer_id
+            ,CASE
+                WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'Traditional'
+                WHEN app_arranger.id IS NOT NULL THEN CONCAT('arr. ', app_arranger_person.lastname)
+                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                END AS composer_name
+            ,CASE
+                WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'zzzz'
+                WHEN app_arranger.id IS NOT NULL THEN CONCAT(app_arranger_person.lastname, \' \', app_arranger_person.firstname)
+                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                END AS composer_order
+            ,CASE
+                WHEN app_arranger.id IS NOT NULL THEN 2
+                ELSE 1
+                END AS arrangements_last
 	        ,STRING_AGG(CONCAT(comp_orgs.org, \' (\', years, \')\'),\'<br />\') AS orgs
         FROM
 	        app_composition
@@ -301,15 +314,31 @@ def rep_list(request):
 			        composition_id
 			        ,org
 		        ) AS comp_orgs ON app_composition.id = comp_orgs.composition_id
-            INNER JOIN app_composer ON app_composer.id = app_composition.composer_id
-            INNER JOIN app_person ON app_person.id = app_composer.person_id
+            LEFT OUTER JOIN app_composer ON app_composer.id = app_composition.composer_id
+            LEFT OUTER JOIN app_person ON app_person.id = app_composer.person_id
+            LEFT OUTER JOIN app_composer AS app_arranger ON app_arranger.id = app_composition.arranger_id
+            LEFT OUTER JOIN app_person AS app_arranger_person ON app_arranger_person.id = app_arranger.person_id
         GROUP BY
 	        app_composition.id
 	        ,app_composition.title
-	        ,app_composition.composer_id
-            ,CONCAT(app_person.lastname, \' \', app_person.firstname)
+	        ,COALESCE(app_composer.id, app_arranger.id)
+            ,CASE
+                WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'Traditional'
+                WHEN app_arranger.id IS NOT NULL THEN CONCAT('arr. ', app_arranger_person.lastname)
+                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                END
+            ,CASE
+                WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'zzzz'
+                WHEN app_arranger.id IS NOT NULL THEN CONCAT(app_arranger_person.lastname, \' \', app_arranger_person.firstname)
+                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                END
+            ,CASE
+                WHEN app_arranger.id IS NOT NULL THEN 2
+                ELSE 1
+                END
         ORDER BY
-	        composer_name
+	        composer_order
+            ,arrangements_last
 	        ,title
     """, params=[filteredpieces, me_organizationinstances])
 
