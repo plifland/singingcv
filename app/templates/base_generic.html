@@ -26,7 +26,8 @@
 <!-- Bootstrap -->
 <div style="margin-top:20px;">
 <nav class="navbar navbar-expand-lg navbar-dark">
-    <span class="navbar-brand ml-sm-0 ml-md-5" style="letter-spacing: 4px;"><span style="color: tan">PETER</span> LIFLAND</span>
+    <span class="navbar-brand ml-sm-0 ml-md-5 d-none d-sm-block" style="letter-spacing: 4px;"><span style="color: tan">PETER</span> LIFLAND</span>
+    <span class="navbar-brand ml-sm-0 ml-md-5 d-sm-none" style="letter-spacing: 4px; font-size:0.9rem;"><span style="color: tan">PETER</span> LIFLAND</span>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
     </button>
@@ -52,7 +53,7 @@
               <a class="dropdown-item {% if nbar == 'vocalcv_about' %}active{% endif %}" href="{% url 'vocalcv' %}">ABOUT</a>
             </div>
         </li>
-        {% else %}    
+        {% else %}
         <li class="nav-item {% if nbar == 'vocalcv' %}active{% endif %}">
         <a href="{% url 'guestlogin' %}" class="nav-link">VOCAL CV</a>
         </li>
