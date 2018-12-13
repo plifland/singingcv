@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="w3-row">
+<div class="pl-3 pl-md-0 pr-3 pl-md-0">
   <h1>{{ orginst_mostrecent.organization.name }}</h1>
   <span style="font-size:80%">last updated: {{ orginst_mostrecent.end|date:"b Y"|title }}</span>
 
@@ -39,21 +39,21 @@
     </div>
   </div>
 
-  <div style="padding-top:30px">
+  <div style="padding-top:30px;">
     <h4>Performances</h4>
 
 	<table>
 	<tr>
         <th style="font-size:110%; font-weight:200;">Name</th>
 		<th style="padding-left:25px; font-size:110%; font-weight:200;">Date</th>
-		<th style="padding-left:25px; font-size:110%; font-weight:200;">Location</th>
+		<th class="d-none d-md-block" style="padding-left:25px; font-size:110%; font-weight:200;">Location</th>
 		<th style="padding-left:25px; font-size:110%; font-weight:200;">Venue</th>
 	</tr>
 	{% for pi in performances %}
     <tr>
 		<td><a href="{% url 'performances-specific' pk=pi.performance.pk pi=pi.pk  %}">{{ pi.performance.name }}</a></td>
         <td style="padding-left:25px;">{{ pi.date|date:"b d, Y"|title }}</td>
-		<td style="padding-left:25px;">{{ pi.city }}</td>
+		<td class="d-none d-md-block" style="padding-left:25px;">{{ pi.city }}</td>
 		<td style="padding-left:25px;">{{ pi.venue }}</td>
 	</tr>
     {% endfor %}

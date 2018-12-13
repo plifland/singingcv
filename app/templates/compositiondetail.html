@@ -1,7 +1,7 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="w3-row">
+<div class="pl-3 pl-md-0 pr-3 pl-md-0">
   <h1>{{ composition.title }}</h1>
   <h2>{% if not composition.composer %}Anon.{% endif %}{{ composition.composer }}</h2>
   {% if composition.arranger %}<h2>Arr. {{ composition.arranger }}</h2>{% endif %}
@@ -35,16 +35,16 @@
         <th style="font-size:115%; font-weight:200; padding-bottom:5px;">Organization</th>
         <th style="padding-left:25px; font-size:115%; font-weight:200; padding-bottom:5px;">Name</th>
 		<th style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Date</th>
-		<th style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Location</th>
-		<th style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Venue</th>
+		<th class="d-none d-md-block" style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Location</th>
+		<th class="d-none d-md-block" style="padding-left:25px; font-size:115%; font-weight:200; min-width:120px; padding-bottom:5px;">Venue</th>
 	</tr>
 	{% for pp in performances %}
     <tr>
         <td class="trimname">{% for org in pp.organizations.all %}<a href="{% url 'organization-detail-name' pk=org.organization %}">{{ org.organization.name }}</a>{% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
 		<td class="trimname" style="padding-left:25px; max-width:300px;"><a href="{% url 'performances-specific' pk=pp.performanceinstance.performance.pk pi=pp.performanceinstance.pk  %}">{{ pp.performanceinstance.performance.name }}</a></td>
         <td style="padding-left:25px;">{{ pp.performanceinstance.date|date:"b d, Y"|title }}</td>
-		<td style="padding-left:25px;">{{ pp.performanceinstance.city }}</td>
-		<td style="padding-left:25px;">{{ pp.performanceinstance.venue }}</td>
+		<td class="d-none d-md-block" style="padding-left:25px;">{{ pp.performanceinstance.city }}</td>
+		<td class="d-none d-md-block" style="padding-left:25px;">{{ pp.performanceinstance.venue }}</td>
 	</tr>
     {% endfor %}
 	</table>

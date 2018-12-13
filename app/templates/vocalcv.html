@@ -1,10 +1,10 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<h1>Peter Lifland - CV</h1>
+<div class="row">
+	<div class="col-md-4 d-none d-md-block">
+        <h1>Peter Lifland - CV</h1>
 
-<div class="w3-row">
-	<div class="w3-col m5" style="padding-left:60px; padding-right:40px;">
 	    <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:10px;margin-left:40px;">
 
         <h3 style="margin-top:20px;">Present organizations:</h3>
@@ -27,7 +27,8 @@
         {% endfor %}
         </div>
     </div>
-    <div class="w3-col m7">
+    <div class="col-md-8 col-sm-12" style="padding-top:20px;">
+        <div style="padding-left:20px; padding-right:20px;">
         <p>Welcome to my CV, where I record where and what I sing!</p>
 
         <p>This is an active and growing collection - so far I have input most everything from the present (2018) back to about mid-2010. There is more data entry to come!</p>
@@ -38,9 +39,6 @@
 
         <p>Q: Why are you doing this? What is this for?</p>
         <p>A: I realized that I was getting bad at answering the question "Have you done &lt;this piece&gt; before?" And I find it quite fun to look back at all the awesome opportunities I have had!</p>
-        
-        <p>Q: Why does this look terrible on my phone?</p>
-        <p>A: Phone-size screen support is coming! Give me a few months.</p>
 
         <p>Q: I don't want to appear in your database. How do I get out?</p>
         <p>A: Because of the login requirement, this website shouldn't show up for any web searches for your name, so hopefully being listed here is pretty harmless! I am more than happy to remove you or edit your name to a pseudonym on request regardless though. Just use the contact form to reach out to me with your desired action.</p>
@@ -48,39 +46,39 @@
         <p>Q: I want one of these for myself! How do I get one?</p>
         <p>A: Just kidding, no one has asked this question.</p>
         
-        <h3 style="margin-top:20px;">Fun stats</h3>
-        <table>
+        <table style="margin-top:20px;">
             <tr>
-                <td style="width:120px;"></td>
-                <td style="width:40px; text-align:center;">Me</td>
-                <td style="width:40px; text-align:center;">All</td>
+                <td style="width:120px;"><h3>Fun stats</h3></td>
+                <td style="width:40px; text-align:center;"><h3>Me</h3></td>
+                <td style="width:40px; text-align:center;"><h3>All</h3></td>
             </tr>
             <tr>
-                <td><strong>Organizations:</strong></td>
+                <td>Organizations</td>
                 <td style="text-align:center;">{{ me_org_count }}</td>
                 <td style="text-align:center;">{{ db_org_count }}</td>
             </tr>
             <tr>
-                <td><strong>Singers:</strong></td>
+                <td>Singers</td>
                 <td style="text-align:center;">--</td>
                 <td style="text-align:center;">{{ db_singer_count }}</td>
             </tr>
             <tr>
-                <td><strong>Conductors:</strong></td>
+                <td>Conductors</td>
                 <td style="text-align:center;">{{ me_conductor_count }}</td>
                 <td style="text-align:center;">{{ db_conductor_count }}</td>
             </tr>
             <tr>
-                <td><strong>Composers:</strong></td>
+                <td>Composers</td>
                 <td style="text-align:center;">{{ me_composer_count }}</td>
                 <td style="text-align:center;">{{ db_composer_count }}</td>
             </tr>
             <tr>
-                <td><strong>Pieces:</strong></td>
+                <td>Pieces</td>
                 <td style="text-align:center;">{{ me_piece_count }}</td>
                 <td style="text-align:center;">{{ db_piece_count }}</td>
             </tr>
         </table>
+        </div>
     </div>
 </div>
 
