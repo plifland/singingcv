@@ -7,8 +7,28 @@
         <img src="{{ MEDIA_URL }}groomsmen.jpg" alt="" style="width:100%; max-width:100%; height: auto; object-fit:contain;" />
     </div>
 	
-    <div style="position:absolute; right:20px; bottom:20px;
+    <div class="d-none d-md-block" style="position:absolute; right:20px; bottom:20px;
 		    border:5px solid tan; border-radius:10px; padding:5px 15px; background:rgba(0,0,0,0.65);">
+	    <div class="" style="font-size:180%; font-weight:bold; margin-bottom: 10px;" float="both">Upcoming Performances</div>
+    
+        {% for prf in upcoming %}
+        <div style="margin-bottom:10px; height: 65px;">
+		    <div class="" align="center"
+			    style="background: rgba(210,180,140,1); display:inline-block; padding:8px 5px 2px 5px;
+					    height:65px; width:65px;">
+			    <span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"b"|upper }}</span><br />
+			    <span style="font-size:260%; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"d" }}</span>
+		    </div>
+		    <div style="display:inline-block; height:65px; margin-left: 10px;">
+			    <p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px; max-width:280px; white-space: nowrap;">{{ prf.performance.name }}</p>
+			    <p style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px; max-width:280px; white-space: nowrap; overflow: hidden;">{% with prf.organizations.all|first as org %}{{ org.organization.name }} - {% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endwith %}</p>
+			    <p style="margin:0px; line-height:1em; max-width:280px; padding-bottom:1px; white-space: nowrap; overflow: hidden;">{{ prf.venue }}, {{ prf.city }}</p>
+		    </div>
+	    </div>
+        {% endfor %}
+    </div>
+
+    <div class="d-md-none">
 	    <div class="" style="font-size:180%; font-weight:bold; margin-bottom: 10px;" float="both">Upcoming Performances</div>
     
         {% for prf in upcoming %}
