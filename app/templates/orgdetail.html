@@ -1,7 +1,6 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
 <div class="w3-row">
   <h1>{{ orginst_mostrecent.organization.name }}</h1>
   <span style="font-size:80%">last updated: {{ orginst_mostrecent.end|date:"b Y"|title }}</span>
@@ -60,7 +59,5 @@
     {% endfor %}
 	</table>
   </div>
-
-</div>
 </div>
 {% endblock %}

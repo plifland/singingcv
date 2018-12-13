@@ -7,9 +7,9 @@
             <td style="padding-left:15px; padding-right:10px; padding-bottom:10px; color:white; margin-bottom:10px; width:50px;">
                 <a href="{% url 'replist' %}?composer={{ p.composition.composer }}">{{ p.composition.composer.person.lastname }}</a>
                 {% if not p.composition.composer %}Anon.{% endif %}
-                {% if p.composition.arranger %}<div class="small-subdata">arr. {{ p.composition.arranger.person.lastname }}</div>{% endif %}
+                {% if p.composition.arranger %}<div class="small-subdata"><a href="{% url 'replist' %}?composer={{ p.composition.arranger }}">arr. {{ p.composition.arranger.person.lastname }}</a></div>{% endif %}
             </td>
-            <td style="padding-bottom:10px; color:white;">{{ p.composition.title }}</td>
+            <td class="trimtitle" style="padding-bottom:10px; color:white;"><a href="{% url 'composition-detail' pk=p.composition.id %}">{{ p.composition.title }}</a></td>
         </tr>
         {% endfor %}
     {% endfor %}

@@ -1,7 +1,6 @@
 {% extends "base_generic.html" %}
 
 {% block content %}
-<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
 <div class="w3-row">
   <h1>{{ composition.title }}</h1>
   <h2>{% if not composition.composer %}Anon.{% endif %}{{ composition.composer }}</h2>
@@ -50,7 +49,5 @@
     {% endfor %}
 	</table>
   </div>
-
-</div>
 </div>
 {% endblock %}

@@ -5,64 +5,58 @@
     $(function() {
         $('.trimtitle a').each(function (index, item) {
             var len_item = $(item).html().replace("<br />", "\r\n").split(/\r?\n/)[0].trim().length;
-            if (len_item > 70)
+            if (len_item > 75)
                 $(item).parent().css("font-size", "70%");
-            else if (len_item > 60)
+            else if (len_item > 65)
                 $(item).parent().css("font-size", "80%");
-            else if (len_item > 50)
+            else if (len_item > 55)
                 $(item).parent().css("font-size", "90%");
         });
     });
 </script>
 
-<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="replist">
-<div class="w3-row w3-padding-16">
-
-<div class="w3-col m12">
-    {% include "forms/repfilters.html" %}
-
-    <table>
-        <tr>
-            <th style="width:240px;">Composer</th>
-            <th style="width:400px; padding-left:12px; padding-right:24px;">Title</th>
-            <th style="width:200px;">Performances</th>
-        </tr>
-    {% for p in pieces %}
-        <tr>
-            <td style="padding-top:5px;"><a href="{% url 'replist' %}?composer={{ p.composer }}">{{ p.composer_name }}</a></td>
-            <td class="trimtitle" style="padding-top:5px; padding-left:12px; padding-right:24px;"><a href="{% url 'composition-detail' pk=p.id %}">{{ p.title }}</a></td>
-            <td style="padding-top:5px; font-size:80%; line-height:100%;">{{ p.orgs|safe }}</td>
-        </tr>
-    {% endfor %}
-    </table>
-</div>
-</div>
-
 <div class="w3-row">
-<div class="w3-center" style="padding-top:1px;">
-    <span class="step-links">
-        {% if pieces.has_previous %}
-            <a href="?{{ request.GET.urlencode }}&page=1">&laquo; first</a>
-            <a href="?{{ request.GET.urlencode }}&page={{ pieces.previous_page_number }}">prev</a>
-        {% else %}
-            <span style="padding-right:70px;">&nbsp;</span>
-        {% endif %}
+    <div class="w3-col m12">
+        {% include "forms/repfilters.html" %}
 
-        <span class="current" style="padding-left:10px; padding-right:10px;">
-            Page {{ pieces.number }} of {{ pieces.paginator.num_pages }}
+        <table style="margin-top:20px;">
+            <tr>
+                <th style="width:280px; font-size:110%;">Composer</th>
+                <th style="width:500px; padding-left:12px; padding-right:24px; font-size:110%;">Title</th>
+                <th style="width:300px; font-size:110%;">Performances</th>
+            </tr>
+        {% for p in pieces %}
+            <tr>
+                <td style="padding-top:5px;"><a href="{% url 'replist' %}?composer={{ p.composer }}">{{ p.composer_name }}</a></td>
+                <td class="trimtitle" style="padding-top:5px; padding-left:12px; padding-right:24px;"><a href="{% url 'composition-detail' pk=p.id %}">{{ p.title }}</a></td>
+                <td style="padding-top:5px; font-size:80%; line-height:100%;">{{ p.orgs|safe }}</td>
+            </tr>
+        {% endfor %}
+        </table>
+    </div>
+</div>
+
+<div class="w3-row" style="margin-top:30px;">
+    <div class="w3-center" style="padding-top:1px;">
+        <span class="step-links">
+            {% if pieces.has_previous %}
+                <a href="?{{ request.GET.urlencode }}&page=1">&laquo; first</a>
+                <a href="?{{ request.GET.urlencode }}&page={{ pieces.previous_page_number }}">prev</a>
+            {% else %}
+                <span style="padding-right:70px;">&nbsp;</span>
+            {% endif %}
+
+            <span class="current" style="padding-left:10px; padding-right:10px;">
+                Page {{ pieces.number }} of {{ pieces.paginator.num_pages }}
+            </span>
+
+            {% if pieces.has_next %}
+                <a href="?{{ request.GET.urlencode }}&page={{ pieces.next_page_number }}">next</a>
+                <a href="?{{ request.GET.urlencode }}&page={{ pieces.paginator.num_pages }}">last &raquo;</a>
+            {% else %}
+                <span style="padding-right:70px;">&nbsp;</span>
+            {% endif %}
         </span>
-
-        {% if pieces.has_next %}
-            <a href="?{{ request.GET.urlencode }}&page={{ pieces.next_page_number }}">next</a>
-            <a href="?{{ request.GET.urlencode }}&page={{ pieces.paginator.num_pages }}">last &raquo;</a>
-        {% else %}
-            <span style="padding-right:70px;">&nbsp;</span>
-        {% endif %}
-    </span>
-</div>
-</div>
-
-<script>
-</script>
+    </div>
 </div>
 {% endblock %}

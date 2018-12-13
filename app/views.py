@@ -72,6 +72,7 @@ def vocalcv(request):
             'db_conductor_count':db_conductor_count,
             'db_singer_count':db_singer_count,
             'db_piece_count':db_piece_count,
+            'nbar': 'vocalcv_about',
             },
     )
 
@@ -90,21 +91,28 @@ def home(request):
     return render(
         request,
         'home.html',
-        context={'upcoming':upcoming},
+        context={
+            'upcoming':upcoming,
+            'nbar': 'home',
+        },
     )
 
 def recordings(request):
     return render(
         request,
         'recordings.html',
-        context={},
+        context={
+            'nbar': 'recordings'
+        },
     )
 
 def bio(request):
     return render(
         request,
         'bio.html',
-        context={},
+        context={
+            'nbar': 'bio'
+        },
     )
 
 def links(request):
@@ -141,7 +149,10 @@ def contact(request):
     return render(
         request,
         'contact.html',
-        context={'form': form_class},
+        context={
+            'form': form_class,
+            'nbar': 'contact',
+        },
     )
 
 def view_organizations(request):
@@ -163,7 +174,10 @@ class Performances(LoginRequiredMixin, generic.View):
         return render(
             request,
             'performances.html',
-            context={'performanceinstances':performanceinstances},
+            context={
+                'performanceinstances':performanceinstances,
+                'nbar': 'vocalcv',
+            },
         )
 class PerformancesSpecific(LoginRequiredMixin, generic.View):
     def get(self, request, pk, pi):
@@ -178,6 +192,7 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
             'performanceinstances':performanceinstances,
             'pk':pk,
             'pi':pi,
+            'nbar': 'vocalcv',
             }
         return render(
             request,
@@ -351,7 +366,12 @@ def rep_list(request):
     except EmptyPage:
         pieces_page = paginator.get_page(paginator.num_pages)
 
-    filterform = RepListFiltersForm
+    filterform = RepListFiltersForm({
+        'composer':composer,
+        'org':org,
+        'year':year,
+        'era':era,
+        })
 
     return render(
         request,
@@ -359,6 +379,7 @@ def rep_list(request):
         {
             'pieces':pieces_page,
             'form':filterform,
+            'nbar': 'vocalcv',
          },
     )
 
@@ -394,7 +415,8 @@ def org_details(request, pk):
         'altos':altos,
         'tenors':tenors,
         'basses':basses,
-        'performances':performances
+        'performances':performances,
+        'nbar': 'vocalcv',
         }
     return render(request, 'orgdetail.html', context)
 
@@ -413,6 +435,7 @@ def composition_details(request, pk):
     context = {
         'composition':composition,
         'performances':performances,
+        'nbar': 'vocalcv',
         }
     return render(request, 'compositiondetail.html', context)
 

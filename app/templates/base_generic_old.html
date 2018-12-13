@@ -1,41 +1,83 @@
-<!DOCTYPE html>
-<html lang="en">
+﻿<!DOCTYPE html>
+<html>
 <head>
-  
-  {% block title %}<title>Peter Lifland - CV</title>{% endblock %}
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  
-  <!-- Add additional CSS in static file -->
-  {% load static %}
-  <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>PeterLifland.com</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'app/content/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/w3styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Archivo:600">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script type="text/javascript" src="{% static 'app/scripts/bootstrap.min.js' %}"></script>
+
+    <style>
+	    body {font-family: "Lato", sans-serif}
+    </style>
+    {% block extraheaders %}{% endblock %}
 </head>
 
-<body>
+<body style="background-color:black" {% block bodyargs %}{% endblock %}>
 
-  <div class="container-fluid">
-
-    <div class="row">
-      <div class="col-sm-2">
-	  <img src='{{ MEDIA_URL }}headshot.jpg' style="max-width:150px;height:auto;margin-top:20px">
-	  
-      {% block sidebar %}
-      <ul class="sidebar-nav">
-          <li><a href="{% url 'index' %}">Home</a></li>
-          <li><a href="{% url 'organizations' %}">All organizations</a></li>
-          <li><a href="">All conductors</a></li>
-          <li><a href="">All composers</a></li>
-          <li><a href="">All pieces</a></li>
-      </ul>
-      {% endblock %}
+<!-- Navbar -->
+<div class="w3-top w3-margin-bottom">
+  <div class="w3-bar w3-black w3-card">
+    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+	<span class="w3-bar-item w3-padding-large w3-hide-small" 
+		  style="margin-left:150px; font-weight: bold; letter-spacing: 4px;"><span style="color: tan">PETER</span> LIFLAND</span>
+    <a href="{% url 'home' %}" class="w3-bar-item w3-button w3-padding-large w3-margin-left">HOME</a>
+    <a href="{% url 'recordings' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">RECORDINGS</a>
+    <a href="{% url 'bio' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">BIO</a>
+    {% if user.is_authenticated %}
+      <div class="w3-dropdown-hover">
+        <button class="w3-padding-large w3-button">VOCAL CV</button>
+        <div class="w3-dropdown-content w3-bar-block w3-border-right w3-border-left w3-border-bottom w3-border-top w3-card-4 w3-black">
+          <a href="{% url 'replist' %}" class="w3-bar-item w3-button w3-black">Repertoire List</a>
+          <a href="{% url 'performances' %}" class="w3-bar-item w3-button w3-black">Performances</a>
+          <a href="{% url 'vocalcv' %}" class="w3-bar-item w3-button w3-black">About</a>
+        </div>
       </div>
-      <div class="col-sm-10" style="padding-left:30px;margin-top:5px;">
-      {% block content %}{% endblock %}
-      </div>
-    </div>
+    {% else %}
+      <a href="{% url 'guestlogin' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">VOCAL CV</a>
+    {% endif %}
+    <a href="{% url 'contact' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left" style="margin-right:150px;">CONTACT</a>
   </div>
+</div>
+
+<!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+<!--<div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
+  <a href="#band" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">BAND</a>
+  <a href="#tour" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">TOUR</a>
+  <a href="#contact" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">CONTACT</a>
+  <a href="#" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MERCH</a>
+</div>-->
+
+<!-- Page content -->
+<div class="w3-content w3-black" style="margin-left:120px;">
+    {% block content %}{% endblock %}
+<!-- End Page Content -->
+</div>
+
+<!-- Footer -->
+<footer class="w3-container w3-black w3-padding-32 w3-center w3-xlarge" style="max-width:1220px;">
+  <!--<i class="fa fa-facebook-official w3-hover-opacity"></i>
+  <i class="fa fa-instagram w3-hover-opacity"></i>
+  <i class="fa fa-snapchat w3-hover-opacity"></i>
+  <i class="fa fa-pinterest-p w3-hover-opacity"></i>
+  <i class="fa fa-twitter w3-hover-opacity"></i>
+  <i class="fa fa-linkedin w3-hover-opacity"></i>-->
+  <div style="font-size:40%;">
+    {% if not user.is_authenticated %}
+    Need to administer? <a href="{% url 'login' %}?next={{request.path}}">Login!</a>
+    {% else %}
+    <a href="{% url 'logout'%}?next={{request.path}}">Logout</a>
+    {% endif %} 
+  </div>
+</footer>
+
 </body>
 </html>

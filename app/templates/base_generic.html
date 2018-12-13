@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿
+<!DOCTYPE html>
 <html>
 <head>
     <title>PeterLifland.com</title>
@@ -11,56 +12,64 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Archivo:600">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script type="text/javascript" src="{% static 'app/scripts/bootstrap.min.js' %}"></script>
 
     <style>
 	    body {font-family: "Lato", sans-serif}
-    </style>
+    </style> 
     {% block extraheaders %}{% endblock %}
 </head>
 
 <body style="background-color:black" {% block bodyargs %}{% endblock %}>
 
-<!-- Navbar -->
-<div class="w3-top w3-margin-bottom">
-  <div class="w3-bar w3-black w3-card">
-    <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
-	<span class="w3-bar-item w3-padding-large w3-hide-small" 
-		  style="margin-left:150px; font-weight: bold; letter-spacing: 4px;"><span style="color: tan">PETER</span> LIFLAND</span>
-    <a href="{% url 'home' %}" class="w3-bar-item w3-button w3-padding-large w3-margin-left">HOME</a>
-    <a href="{% url 'recordings' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">RECORDINGS</a>
-    <a href="{% url 'bio' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">BIO</a>
-    {% if user.is_authenticated %}
-      <div class="w3-dropdown-hover">
-        <button class="w3-padding-large w3-button">VOCAL CV</button>
-        <div class="w3-dropdown-content w3-bar-block w3-border-right w3-border-left w3-border-bottom w3-border-top w3-card-4 w3-black">
-          <a href="{% url 'replist' %}" class="w3-bar-item w3-button w3-black">Repertoire List</a>
-          <a href="{% url 'performances' %}" class="w3-bar-item w3-button w3-black">Performances</a>
-          <a href="{% url 'vocalcv' %}" class="w3-bar-item w3-button w3-black">About</a>
-        </div>
-      </div>
-    {% else %}
-      <a href="{% url 'guestlogin' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left">VOCAL CV</a>
-    {% endif %}
-    <a href="{% url 'contact' %}" class="w3-bar-item w3-button w3-padding-large w3-hide-small w3-margin-left" style="margin-right:150px;">CONTACT</a>
-  </div>
+<!-- Bootstrap -->
+<div style="margin-top:20px;">
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <span class="navbar-brand" style="margin-left:150px; font-weight: bold; letter-spacing: 4px;"><span style="color: tan">PETER</span> LIFLAND</span>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarToggler">
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+        <li class="nav-item {% if nbar == 'home' %}active{% endif %}">
+        <a href="{% url 'home' %}" class="nav-link">HOME</a>
+        </li>
+        <li class="nav-item {% if nbar == 'recordings' %}active{% endif %}">
+        <a href="{% url 'recordings' %}" class="nav-link">RECORDINGS</a>
+        </li>
+        <li class="nav-item {% if nbar == 'bio' %}active{% endif %}">
+        <a href="{% url 'bio' %}" class="nav-link">BIO</a>
+        </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item dropdown {% if nbar == 'vocalcv' or nbar == 'vocalcv_about' %}active{% endif %}">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              VOCAL CV
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'replist' %}">Repertoire List</a>
+              <a class="dropdown-item" href="{% url 'performances' %}">Performances</a>
+              <a class="dropdown-item {% if nbar == 'vocalcv_about' %}active{% endif %}" href="{% url 'vocalcv' %}">About</a>
+            </div>
+        </li>
+        {% else %}    
+        <li class="nav-item {% if nbar == 'vocalcv' %}active{% endif %}">
+        <a href="{% url 'guestlogin' %}" class="nav-link">VOCAL CV</a>
+        </li>
+        {% endif %}
+        <li class="nav-item {% if nbar == 'contact' %}active{% endif %}">
+        <a href="{% url 'contact' %}" class="nav-link" style="margin-right:150px;">CONTACT</a>
+        </li>
+    </ul>
+    </div>
+</nav>
 </div>
-
-<!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
-<!--<div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
-  <a href="#band" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">BAND</a>
-  <a href="#tour" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">TOUR</a>
-  <a href="#contact" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">CONTACT</a>
-  <a href="#" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">MERCH</a>
-</div>-->
 
 <!-- Page content -->
 <div class="w3-content w3-black" style="margin-left:120px;">
     {% block content %}{% endblock %}
-<!-- End Page Content -->
 </div>
+<!-- End Page Content -->
 
 <!-- Footer -->
 <footer class="w3-container w3-black w3-padding-32 w3-center w3-xlarge" style="max-width:1220px;">

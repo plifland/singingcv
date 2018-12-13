@@ -1,12 +1,11 @@
-﻿{% extends "base_generic.html" %}
+{% extends "base_generic.html" %}
 
 {% block bodyargs %}
 {% if pk is not null %}onload="showperformancedetails({{ pk }}); showperformancepieces({{ pi }});"{% endif %}
 {% endblock %}
 
 {% block content %}
-<div class="w3-container w3-content" style="max-width:1200px; padding:64px 64px 0px 64px;" id="orglist">
-<div class="w3-row w3-padding-32">
+<div class="w3-row">
 
 <div class="w3-col m5" style="padding-right:32px;">
   <h1>Performance List</h1>
@@ -80,6 +79,5 @@
 
 <div class="w3-col m7" id="perfdetails" style="padding-left:32px; visibility:hidden;" />
 
-</div>
 </div>
 {% endblock %}

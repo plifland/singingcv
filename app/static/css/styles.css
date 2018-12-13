@@ -30,3 +30,35 @@ a:not(.collapsed)
     -o-transform: rotate(180deg);
     transform: rotate(180deg);
 }
+
+.navbar-nav > li > .dropdown-menu {
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar-nav > li > .dropdown-menu > .dropdown-item {
+    background-color: #000000;
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.navbar-nav > li > .dropdown-menu > .dropdown-item.active {
+    color: #fff;
+}
+
+.card-header {
+    padding-top: 0rem;
+}
+
+.well-row {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-left:30px;
+    vertical-align: middle;
+    display:flex;
+    align-items:center;
+}
+
+label {
+    margin-bottom: 0px;
+    margin-right: 5px;
+}
