@@ -31,6 +31,10 @@ a:not(.collapsed)
     transform: rotate(180deg);
 }
 
+.navbar-toggler {
+    font-size:0.7rem;
+}
+
 .navbar-nav > li > .dropdown-menu {
     background-color: #000000;
     color: rgba(255, 255, 255, 0.5);
