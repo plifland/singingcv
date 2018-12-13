@@ -39,6 +39,7 @@ a:not(.collapsed)
 .navbar-nav > li > .dropdown-menu > .dropdown-item {
     background-color: #000000;
     color: rgba(255, 255, 255, 0.5);
+    font-size: 0.66rem;
 }
 
 .navbar-nav > li > .dropdown-menu > .dropdown-item.active {
