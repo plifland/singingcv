@@ -8,7 +8,7 @@
 {{ form.media }}
 {% endblock %}
 
-<form action="" method="get">
+<form class="d-none d-lg-block" action="" method="get">
     {% csrf_token %}
     <div class="well" style="background-color:darkgrey; color:black;">
       <div class="row">
@@ -34,8 +34,36 @@
           <label for="{{ form.org.name }}" style="line-height:34px;">{{ form.org.label }}:</label>
           {{ form.org }}
         </div>
-        
       </div>
-      
     </div>
-  </form>
+</form>
+
+<form class="d-lg-none" action="" method="get">
+    {% csrf_token %}
+    <h4 class="filter-row">Rep List - Filters</h4>
+    <table id="filtertable" class="table" style="margin-bottom:0px;">
+      <tbody>
+        <tr>
+          <td><label for="{{ form.org.name }}" style="line-height:34px;">{{ form.org.label }}:</label></td>
+          <td>{{ form.org }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.composer.label_tag }}</td>
+          <td>{{ form.composer }}</td>
+        </tr>
+        <tr>
+          <td><label for="{{ form.era.name }}" style="line-height:34px;">{{ form.era.label }}:</label></td>
+          <td>{{ form.era }}</td>
+        </tr>
+        <tr>
+          <td>{{ form.year.label_tag }}</td>
+          <td>{{ form.year }}</td>
+        </tr>
+      </tbody>
+    </table>
+    <div style="padding-left:15px; margin-top:0px; margin-bottom:10px;">
+        <button type="submit" class="btn btn-primary" style="padding-top:0rem; padding-bottom:0rem;">
+            <span class="glyphicon glyphicon-search"></span>Filter
+        </button>
+    </div>
+</form>

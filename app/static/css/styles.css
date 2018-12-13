@@ -67,3 +67,15 @@ label {
     margin-bottom: 0px;
     margin-right: 5px;
 }
+
+.filter-row {
+    margin-bottom: 5px;
+}
+
+#filtertable > tbody > tr > td {
+    padding-top: 0.25rem;
+    padding-bottom: 0.25rem;
+    padding-right: 0rem;
+    vertical-align: middle;
+    border-top: 0px;
+}
