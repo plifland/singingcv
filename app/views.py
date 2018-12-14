@@ -186,12 +186,27 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
 
         # Gets the most recent record per organization
         #performances = Performance.objects.all()
-        performanceinstances = PerformanceInstance.objects.filter(performance__type='P')
+        performanceinstances_all = PerformanceInstance.objects.filter(performance__type='P')
+
+        performance_specific = Performance.objects.get(pk=pk)
+        performanceinstances_specific = PerformanceInstance.objects.filter(performance=pk).order_by('date')
+
+        pieces = PerformancePiece.objects.filter(performanceinstance__performance=pk)
+
+        pieces_grouped = {}
+        for p in pieces:
+            for oi in p.organizations.all():
+                if not oi.organization.name in pieces_grouped:
+                    pieces_grouped[oi.organization.name] = {}
+                pieces_grouped[oi.organization.name][p.composition.pk] = p
     
         context={
-            'performanceinstances':performanceinstances,
+            'performanceinstances':performanceinstances_all,
             'pk':pk,
             'pi':pi,
+            'performance_specific':performance_specific,
+            'performanceinstances_specific':performanceinstances_specific,
+            'pieces':pieces_grouped,
             'nbar': 'vocalcv',
             }
         return render(
@@ -206,7 +221,7 @@ def performance_detail(request, pk):
     return render(
         request,
         'performancedetails.html',
-        {'performance':performance, 'performanceinstances':performanceinstances},
+        {'performance':performance, 'specificperformanceinstances':performanceinstances},
     )
 @login_required
 def performance_pieces(request, pk):
