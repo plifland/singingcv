@@ -22,6 +22,10 @@
     line-height: 100%;
 }
 
+a:hover {
+    color:white;
+}
+
 a:not(.collapsed)
 .rotate-icon {
     -webkit-transform: rotate(180deg);

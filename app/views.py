@@ -253,15 +253,17 @@ def rep_list(request):
 
     ### Filters
     composer = request.GET.get('composer')
+    composerint = ""
     if composer:
         try:
             composerint = int(composer)
-            pieces = pieces.filter(Q(composer=composer) | Q(arranger=composer))
+            pieces = pieces.filter(Q(composer=composerint) | Q(arranger=composerint))
         except:
             ## Hopefully we have a "Lastname, Firstname" string at this point
             try:
                 (lastname, firstname) = composer.split(', ')
-                pieces = pieces.filter((Q(composer__person__firstname=firstname) & Q(composer__person__lastname=lastname)) | (Q(arranger__person__firstname=firstname) & Q(arranger__person__lastname=lastname)))
+                composerint = Composer.objects.get(Q(person__firstname=firstname) & Q(person__lastname=lastname))
+                pieces = pieces.filter(Q(composer=composerint) | Q(arranger=composerint))
             except ValueError:
                 pieces = pieces
     org = request.GET.get('org')
@@ -367,7 +369,7 @@ def rep_list(request):
         pieces_page = paginator.get_page(paginator.num_pages)
 
     filterform = RepListFiltersForm({
-        'composer':composer,
+        'composer':composerint,
         'org':org,
         'year':year,
         'era':era,
