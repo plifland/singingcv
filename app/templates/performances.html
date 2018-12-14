@@ -1,7 +1,61 @@
 {% extends "base_generic.html" %}
 
+{% block extraheaders %}
+<meta http-equiv="cache-control" content="max-age=0" />
+<meta http-equiv="cache-control" content="no-store" />
+<meta http-equiv="expires" content="-1" />
+<meta http-equiv="expires" content="Tue, 01 Jan 1980 1:00:00 GMT" />
+<meta http-equiv="pragma" content="no-cache" />
+<script>
+    function showperformancedetails(perfid) {
+        document.getElementById("perfdetails").style.visibility = "visible";
+
+        document.getElementById("perfpicker").classList.add("d-none");
+
+        pk = perfid
+        $.ajax({
+            url: 'performance-detail/' + pk,
+            success: function (data) {
+                $('#perfdetails').html(data);
+            }
+        });
+    }
+
+    function showperformancepieces(pk) {
+            pk = pk
+            $.ajax({
+                url: 'performance-pieces/' + pk,
+                success: function (data) {
+                    $('#perfpieces').html(data);
+                }
+            });
+        }
+
+    function showperformancepiecesall(pk) {
+        pk = pk
+        $.ajax({
+            url: 'performance-pieces-all/' + pk,
+            success: function (data) {
+                $('#perfpieces').html(data);
+            }
+        });
+    }
+
+    function restoreperfpicker() {
+        if (!!window.performance && window.performance.navigation.type == 2) {
+            window.location.reload(); //reload page if it has been loaded from cache
+        }
+
+        document.getElementById("perfdetails").style.visibility = "hidden";
+        document.getElementById("perfpicker").classList.remove("d-none");
+    }
+</script>
+{% endblock %}
+
 {% block bodyargs %}
-{% if pk is not null %}onload="showperformancedetails({{ pk }}); showperformancepieces({{ pi }});"{% endif %}
+{% if pk is not null %}onload="showperformancedetails({{ pk }}); showperformancepieces({{ pi }});"
+{% else %} onpageshow="restoreperfpicker(event);"
+{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -43,41 +97,7 @@
   </div>
 </div>
 
-<script>
-    function showperformancedetails(perfid) {
-        document.getElementById("perfdetails").style.visibility = "visible";
 
-        document.getElementById("perfpicker").classList.add("d-none");
-
-        pk = perfid
-        $.ajax({
-            url: 'performance-detail/' + pk,
-            success: function (data) {
-                $('#perfdetails').html(data);
-            }
-        });
-    }
-
-    function showperformancepieces(pk) {
-            pk = pk
-            $.ajax({
-                url: 'performance-pieces/' + pk,
-                success: function (data) {
-                    $('#perfpieces').html(data);
-                }
-            });
-        }
-
-    function showperformancepiecesall(pk) {
-        pk = pk
-        $.ajax({
-            url: 'performance-pieces-all/' + pk,
-            success: function (data) {
-                $('#perfpieces').html(data);
-            }
-        });
-    }
-</script>
 
 <div class="w3-col m7" id="perfdetails" style="padding-left:32px; visibility:hidden;" />
 
