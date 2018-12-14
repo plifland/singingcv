@@ -3,7 +3,7 @@
 {% block content %}
 <div class="w3-row">
 
-<div id="perfpicker" class="w3-col m5 d-md-block" style="padding-right:32px;">
+<div id="perfpicker" class="w3-col m5 d-md-block {% if pi %} d-none {% endif %}" style="padding-right:32px;">
   <h1>Performance List</h1>
   
   {% regroup performanceinstances by date|date:"Y" as pi_lists %}
