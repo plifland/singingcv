@@ -26,20 +26,15 @@
         {% endfor %}
     </div>
 
-    <div class="d-md-none">
-	    <div class="" style="font-size:180%; margin-left:10px; margin-top:10px; margin-bottom:10px;">Upcoming Performances</div>
+    <div class="d-md-none" style="margin-left:10px;">
+	    <div class="" style="font-size:160%; margin-top:10px; margin-bottom:10px;">Upcoming Performances</div>
     
         {% for prf in upcoming %}
-        <div class="row" style="margin-bottom:5px;">
-		    <div class="col-2" style="padding-top:10px; padding-bottom:5px; margin-left:20px; min-width:77px; max-width:77px;">
-			    <span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"b"|upper }}</span><br />
-			    <span style="font-size:260%; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"d" }}</span>
-		    </div>
-		    <div class="col-8" style="padding-top:10px;">
-			    <p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px; max-width:280px; white-space: nowrap;">{{ prf.performance.name }}</p>
-			    <p style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px; max-width:280px; white-space: nowrap;">{% with prf.organizations.all|first as org %}{{ org.organization.name }} - {% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endwith %}</p>
-			    <p style="margin:0px; line-height:1em; max-width:280px; padding-bottom:1px; white-space: nowrap;">{{ prf.venue }}, {{ prf.city }}</p>
-		    </div>
+        <div style="margin-bottom:20px;">
+		    <div style="font-size:160%; letter-spacing:2px; line-height:1em;">{{ prf.date|date:"b"|upper }} {{ prf.date|date:"d" }}</div>
+			<div style="font-size:130%; margin:0px; line-height:1em; margin-bottom:3px;">{{ prf.performance.name }}</div>
+			<div style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px;">{% with prf.organizations.all|first as org %}{{ org.organization.name }} - {% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endwith %}</div>
+			<div style="margin:0px; line-height:1em; padding-bottom:1px;">{{ prf.venue }}, {{ prf.city }}</div>
 	    </div>
         {% endfor %}
     </div>
