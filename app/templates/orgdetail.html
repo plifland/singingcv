@@ -46,14 +46,14 @@
 	<tr>
         <th style="font-size:110%; font-weight:200;">Name</th>
 		<th style="padding-left:25px; font-size:110%; font-weight:200;">Date</th>
-		<th class="d-none d-md-block" style="padding-left:25px; font-size:110%; font-weight:200;">Location</th>
+		<th class="d-none d-md-table-cell" style="padding-left:25px; font-size:110%; font-weight:200;">Location</th>
 		<th style="padding-left:25px; font-size:110%; font-weight:200;">Venue</th>
 	</tr>
 	{% for pi in performances %}
     <tr>
 		<td><a href="{% url 'performances-specific' pk=pi.performance.pk pi=pi.pk  %}">{{ pi.performance.name }}</a></td>
         <td style="padding-left:25px;">{{ pi.date|date:"b d, Y"|title }}</td>
-		<td class="d-none d-md-block" style="padding-left:25px;">{{ pi.city }}</td>
+		<td class="d-none d-md-table-cell" style="padding-left:25px;">{{ pi.city }}</td>
 		<td style="padding-left:25px;">{{ pi.venue }}</td>
 	</tr>
     {% endfor %}

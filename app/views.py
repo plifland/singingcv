@@ -85,7 +85,7 @@ def home(request):
         upcoming.append(prf)
 
         i += 1
-        if i == 4:
+        if i == 3:
             break
 
     return render(
