@@ -301,12 +301,12 @@ def rep_list(request):
             ,CASE
                 WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'Traditional'
                 WHEN app_arranger.id IS NOT NULL THEN CONCAT('arr. ', app_arranger_person.lastname)
-                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                ELSE CONCAT(app_person.lastname, \', \', app_person.firstname)
                 END AS composer_name
             ,CASE
                 WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'zzzz'
                 WHEN app_arranger.id IS NOT NULL THEN CONCAT(app_arranger_person.lastname, \' \', app_arranger_person.firstname)
-                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                ELSE CONCAT(app_person.lastname, \', \', app_person.firstname)
                 END AS composer_order
             ,CASE
                 WHEN app_arranger.id IS NOT NULL THEN 2
@@ -357,12 +357,12 @@ def rep_list(request):
             ,CASE
                 WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'Traditional'
                 WHEN app_arranger.id IS NOT NULL THEN CONCAT('arr. ', app_arranger_person.lastname)
-                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                ELSE CONCAT(app_person.lastname, \', \', app_person.firstname)
                 END
             ,CASE
                 WHEN app_composer.id IS NULL AND app_arranger.id IS NULL THEN 'zzzz'
                 WHEN app_arranger.id IS NOT NULL THEN CONCAT(app_arranger_person.lastname, \' \', app_arranger_person.firstname)
-                ELSE CONCAT(app_person.lastname, \' \', app_person.firstname)
+                ELSE CONCAT(app_person.lastname, \', \', app_person.firstname)
                 END
             ,CASE
                 WHEN app_arranger.id IS NOT NULL THEN 2
