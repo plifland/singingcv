@@ -395,6 +395,7 @@ def rep_list(request):
         'year':year,
         'era':era,
         'formg':formg,
+        'voicing':voicing,
         })
 
     return render(
