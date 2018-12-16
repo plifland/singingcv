@@ -33,6 +33,15 @@ class ContactForm(forms.Form):
         widget=forms.Textarea
     )
 
+class EmptyChoiceField(forms.ChoiceField):
+    def __init__(self, choices=(), empty_label=None, required=True, widget=None, label=None, initial=None, help_text=None, *args, **kwargs):
+
+        # prepend an empty label if it exists (and field is not required!)
+        if not required and empty_label is not None:
+            choices = tuple([(u'', empty_label)] + list(choices))
+
+        super(EmptyChoiceField, self).__init__(choices=choices, required=required, widget=widget, label=label, initial=initial, help_text=help_text, *args, **kwargs) 
+
 ### Replist filter
 class RepListFiltersForm(forms.Form):
     composer = forms.ModelChoiceField(
@@ -52,9 +61,23 @@ class RepListFiltersForm(forms.Form):
         widget = forms.TextInput(attrs={'size':10}),
     )
 
+    formg = forms.ModelChoiceField(
+        required=False,
+        queryset = Genre.objects.filter(subtype='F'),
+    )
+
     era = forms.ModelChoiceField(
         required=False,
         queryset = Genre.objects.filter(subtype='E'),
+    )
+
+    voicing = EmptyChoiceField(
+        choices = Composition.VOICING_CHOICES,
+        label="",
+        initial='',
+        empty_label="All",
+        widget=forms.Select(),
+        required=False,
     )
 
 ### Data input

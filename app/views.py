@@ -290,6 +290,12 @@ def rep_list(request):
     era = request.GET.get('era')
     if era:
         pieces = pieces.filter(tags=era)
+    formg = request.GET.get('formg')
+    if formg:
+        pieces = pieces.filter(tags=formg)
+    voicing = request.GET.get('voicing')
+    if voicing:
+        pieces = pieces.filter(voicing=voicing)
 
     filteredpieces = list(pieces.values_list('pk', flat=True))
 
@@ -388,6 +394,7 @@ def rep_list(request):
         'org':org,
         'year':year,
         'era':era,
+        'formg':formg,
         })
 
     return render(

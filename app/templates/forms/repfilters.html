@@ -12,25 +12,33 @@
     {% csrf_token %}
     <div class="well" style="background-color:darkgrey; color:black;">
       <div class="row">
-        <div class="col-lg-3 well-row"><h4>Rep List - Filters</h4></div>
-        <div class="col-lg-3 well-row" style="padding-left:60px;">
+        <div class="col-lg-2 well-row"><h4>Rep Filters</h4></div>
+        <div class="col-lg-2 well-row">
             {{ form.year.label_tag }}
             {{ form.year }}
         </div>
-        <div class="col-lg-6 well-row" style="padding-left:65px;">
+        <div class="col-lg-3 well-row" style="padding-left:45px; padding-right:10px;">
+          <label for="{{ form.formg.name }}" style="line-height:34px;">Form:</label>
+          {{ form.formg }}
+        </div>
+        <div class="col-lg-5 well-row" style="padding-left:65px;">
           {{ form.composer.label_tag }}
           {{ form.composer }}
         </div>
-        <div class="col-lg-2 well-row" style="padding-bottom:0.7rem;">
+        <div class="col-lg-2 well-row" style="padding-bottom:0.4rem;">
             <button type="submit" class="btn btn-primary">
                 <span class="glyphicon glyphicon-search"></span> Filter
             </button>
         </div>
-        <div class="col-lg-4 well-row" style="padding-left:105px;">
+        <div class="col-lg-2 well-row">
+          <span style="padding-right:5px;">Voicing:</span>
+          {{ form.voicing }}
+        </div>
+        <div class="col-lg-3 well-row" style="padding-left:59px;">
           <label for="{{ form.era.name }}" style="line-height:34px;">{{ form.era.label }}:</label>
           {{ form.era }}
         </div>
-        <div class="col-lg-6 well-row" style="padding-left:110px;">
+        <div class="col-lg-5 well-row" style="padding-left:110px;">
           <label for="{{ form.org.name }}" style="line-height:34px;">{{ form.org.label }}:</label>
           {{ form.org }}
         </div>
@@ -44,12 +52,20 @@
     <table id="filtertable" class="table" style="margin-bottom:0px;">
       <tbody>
         <tr>
+          <td>Voicing:</td>
+          <td>{{ form.voicing }}</td>
+        </tr>
+        <tr>
           <td><label for="{{ form.org.name }}" style="line-height:34px;">{{ form.org.label }}:</label></td>
           <td>{{ form.org }}</td>
         </tr>
         <tr>
           <td>{{ form.composer.label_tag }}</td>
           <td>{{ form.composer }}</td>
+        </tr>
+          <tr>
+          <td>Form:</td>
+          <td>{{ form.formg }}</td>
         </tr>
         <tr>
           <td><label for="{{ form.era.name }}" style="line-height:34px;">{{ form.era.label }}:</label></td>
