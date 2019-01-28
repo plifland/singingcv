@@ -2,6 +2,15 @@
 
 {% block extraheaders %}
 <script src='https://www.google.com/recaptcha/api.js?render=6LcLJ40UAAAAAG3isrFGocpYcIzL8zvavFh8ba3O'></script>
+<script>
+grecaptcha.ready(function() {
+grecaptcha.execute('6LcLJ40UAAAAAG3isrFGocpYcIzL8zvavFh8ba3O', {action: 'contactform'})
+.then(function(token) {
+    console.log(token)
+    document.getElementById('g-recaptcha-response').value =    token;
+});
+});
+</script>
 {% endblock %}
 
 {% block content %}
@@ -31,9 +40,8 @@
 				</div>
 				</div>
 				<textarea class="w3-input w3-border" style="height:240px;" cols="256" rows="10" type="text" placeholder="Message" required name="content"></textarea>
+                <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response">
 				<button class="w3-button w3-black w3-section w3-right" type="submit">SEND</button>
-                
-                <div class="g-recaptcha" data-sitekey="6LcLJ40UAAAAAG3isrFGocpYcIzL8zvavFh8ba3O"></div>
 			</form>
 		</div>
         {% endif %}

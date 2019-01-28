@@ -137,7 +137,7 @@ def contact(request):
             url = 'https://www.google.com/recaptcha/api/siteverify'
             values = {
                 'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
-                'response': recaptcha_response
+                'response': recaptcha_response,
             }
             data = urllib.parse.urlencode(values).encode()
             req =  urllib.request.Request(url, data=data)
@@ -145,7 +145,7 @@ def contact(request):
             result = json.loads(response.read().decode())
             ''' End reCAPTCHA validation '''
 
-            if not result['success']:
+            if not result['success'] or result['score'] < 0.5 or result['action'] != 'contactform':
                 messages.error(request, 'Invalid reCAPTCHA. Please try again.')
                 return redirect('contact')
 
