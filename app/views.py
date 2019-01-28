@@ -14,6 +14,7 @@ from django.urls import reverse
 from django.core.paginator import Paginator
 from datetime import date
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
+from django.conf import settings
 
 from .models import Person, Administrator, Composer, Conductor, Singer, Organization, OrganizationInstance, Performance, PerformanceInstance, PerformancePiece, Composition, Genre
 from .forms import ContactForm, GenreForm, OrganizationInstanceForm, CompositionForm, ComposerForm, RepListFiltersForm
