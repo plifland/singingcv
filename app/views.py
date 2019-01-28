@@ -129,6 +129,23 @@ def contact(request):
         form = form_class(data=request.POST)
 
         if form.is_valid():
+            ''' Begin reCAPTCHA validation '''
+            recaptcha_response = request.POST.get('g-recaptcha-response')
+            url = 'https://www.google.com/recaptcha/api/siteverify'
+            values = {
+                'secret': settings.GOOGLE_RECAPTCHA_SECRET_KEY,
+                'response': recaptcha_response
+            }
+            data = urllib.parse.urlencode(values).encode()
+            req =  urllib.request.Request(url, data=data)
+            response = urllib.request.urlopen(req)
+            result = json.loads(response.read().decode())
+            ''' End reCAPTCHA validation '''
+
+            if not result['success']:
+                messages.error(request, 'Invalid reCAPTCHA. Please try again.')
+                return redirect('contact')
+
             contact_name = request.POST.get('contact_name', '')
             contact_email = request.POST.get('contact_email', '')
             form_content = request.POST.get('content', '')

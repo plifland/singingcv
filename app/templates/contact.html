@@ -1,5 +1,9 @@
 {% extends "base_generic.html" %}
 
+{% block extraheaders %}
+<script src='https://www.google.com/recaptcha/api.js?render=6LcLJ40UAAAAAG3isrFGocpYcIzL8zvavFh8ba3O'></script>
+{% endblock %}
+
 {% block content %}
 
 <!-- The Contact Section -->
@@ -28,6 +32,8 @@
 				</div>
 				<textarea class="w3-input w3-border" style="height:240px;" cols="256" rows="10" type="text" placeholder="Message" required name="content"></textarea>
 				<button class="w3-button w3-black w3-section w3-right" type="submit">SEND</button>
+                
+                <div class="g-recaptcha" data-sitekey="6LcLJ40UAAAAAG3isrFGocpYcIzL8zvavFh8ba3O"></div>
 			</form>
 		</div>
         {% endif %}
