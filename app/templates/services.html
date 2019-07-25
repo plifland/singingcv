@@ -1,0 +1,27 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+<div class="w3-row">
+
+  <h1>Services</h1>
+  {% regroup pieces by performanceinstance as pieces_grouped %}
+  {% for pi,p_list in pieces_grouped %}
+    <h4>{{ pi.date|date:"b d, Y"|title }} - {{ pi.venue }} - {{ pi.performance.name }}</h4>
+
+    <table>
+	{% for p in p_list %}
+    <tr>
+        <td style="padding-left:15px; padding-right:10px; color:white; margin-bottom:5px; width:50px;">
+            <a href="{% url 'replist' %}?composer={{ p.composition.composer }}">{{ p.composition.composer.person.lastname }}</a>
+            {% if not p.composition.composer %}Anon.{% endif %}
+            {% if p.composition.arranger %}<div class="small-subdata"><a href="{% url 'replist' %}?composer={{ p.composition.arranger }}">arr. {{ p.composition.arranger.person.lastname }}</a></div>{% endif %}
+        </td>
+        <td class="trimtitle" style="color:white;"><a href="{% url 'composition-detail' pk=p.composition.id %}">{{ p.composition.title }}</a></td>
+    </tr>
+    {% endfor %}
+	</table>
+
+  {% endfor %}
+
+</div>
+{% endblock %}

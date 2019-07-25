@@ -234,6 +234,21 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
             'performances.html',
             context,
         )
+class Services(LoginRequiredMixin, generic.View):
+    def get(self, request):
+        if not self.request.user.is_authenticated:
+            return Performance.objects.none()
+
+        pieces = PerformancePiece.objects.filter(performanceinstance__performance__type='S').order_by('-performanceinstance__date')
+    
+        return render(
+            request,
+            'services.html',
+            context={
+                'pieces':pieces,
+                'nbar':'vocalcv',
+            },
+        )
 @login_required
 def performance_detail(request, pk):
     performance = Performance.objects.get(pk=pk)
