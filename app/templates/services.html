@@ -14,7 +14,7 @@
     <table>
 	{% for p in p_list %}
     <tr>
-        <td style="padding-left:15px; padding-right:10px; color:white; margin-bottom:5px; width:150px;">
+        <td style="padding-left:15px; padding-right:10px; color:white; margin-bottom:5px; width:130px;">
             <a href="{% url 'replist' %}?composer={{ p.composition.composer }}">{{ p.composition.composer.person.lastname }}</a>
             {% if not p.composition.composer %}Anon.{% endif %}
             {% if p.composition.arranger %}<div class="small-subdata"><a href="{% url 'replist' %}?composer={{ p.composition.arranger }}">arr. {{ p.composition.arranger.person.lastname }}</a></div>{% endif %}
