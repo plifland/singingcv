@@ -41,7 +41,7 @@
 	{% for pp in performances %}
     <tr>
         <td class="trimname">{% for org in pp.organizations.all %}<a href="{% url 'organization-detail-name' pk=org.organization %}">{{ org.organization.name }}</a>{% if not forloop.last %}<br />{% endif %}{% endfor %}</td>
-		<td class="trimname" style="padding-left:25px; max-width:300px;"><a href="{% url 'performances-specific' pk=pp.performanceinstance.performance.pk pi=pp.performanceinstance.pk  %}">{{ pp.performanceinstance.performance.name }}</a></td>
+		<td class="trimname" style="padding-left:25px; max-width:300px;"><a href="{% url 'performances-specific' y=pp.performanceinstance.date.year pk=pp.performanceinstance.performance.pk pi=pp.performanceinstance.pk  %}">{{ pp.performanceinstance.performance.name }}</a></td>
         <td style="padding-left:25px;">{{ pp.performanceinstance.date|date:"b d, Y"|title }}</td>
 		<td class="d-none d-md-table-cell" style="padding-left:25px;">{{ pp.performanceinstance.city }}</td>
 		<td class="d-none d-md-table-cell" style="padding-left:25px;">{{ pp.performanceinstance.venue }}</td>

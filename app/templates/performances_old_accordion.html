@@ -1,36 +1,41 @@
-﻿{% extends "base_generic.html" %}
+{% extends "base_generic.html" %}
 
 {% block content %}
 <div class="w3-row">
 
 <div id="perfpicker" class="w3-col m5 d-md-block {% if pi %} d-none {% endif %}" style="padding-right:32px;">
-  <h1>Concerts</h1>
-  <h4>
-      <span style="display:inline-block; padding-bottom:5px;">
-      {% for yr in years %}
-        {% if forloop.counter < 6 %}
-            {% if yr == year_selected %}<span style="font-size:125%">{{ yr }}</span>
-            {% else %}<a href="{% url 'performances' y=yr %}">{{ yr }}</a>
-            {% endif %}
-            {% if not forloop.counter == 5 %} | {% else %}</span><br /><span style="font-size:60%">{% endif %}
-        {% else %}
-            {% if yr == year_selected %}<span style="font-size:140%">{{ yr }}</span>
-            {% else %}<a href="{% url 'performances' y=yr %}">{{ yr }}</a>
-            {% endif %}
-            {% if not forloop.counter|add:"3"|divisibleby:8 and not forloop.last %} | {% else %}<br />{% endif %}
-        {% endif %}
-      {% endfor %}
-      </span>
-  </h4>
+  <h1>Performance List</h1>
+  
+  {% regroup performanceinstances by date|date:"Y" as pi_lists %}
+  <div class="accordion md-accordion" id="accordionEx" role="tablist" aria-multiselectable="true" style="padding-top:2px;">
+    <!-- Card : each card is a year -->
+    {% for date, pi_list in pi_lists %}
+    <div style="border-bottom:1px solid">
+      
+      <!-- Card header : years -->
+      <div class="card-header" role="tab" id="heading{{ date }}">
+        <a data-toggle="collapse" class="collapsed" href="#collapse{{ date }}" aria-expanded="false" aria-controls="collapse{{ date }}">
+          <h5 class="mb-0">{{ date }}<i class="fa fa-angle-down rotate-icon" style="float:right;"></i></h5>
+        </a>
+      </div>
+      <!-- Card header -->
 
-    <ul class="list-group">
-        {% regroup performanceinstances|dictsort:"performance.name" by performance.name as p_list %}
-        {% for name, perf_list in p_list %}
-        <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px; border:none;">
-        <a href="{% url 'performances-specific' y=year_selected pk=perf_list.0.performance.pk pi=perf_list.0.pk  %}"><div class="large-dataheader" style="line-height:100%">{{ name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
-        </li>
-        {% endfor %}
-    </ul>
+      <!-- Card body : list of performances, ordered by date -->
+      {% regroup pi_list|dictsort:"performance.name" by performance.name as p_list %}
+      <div id="collapse{{ date }}" class="collapse" role="tabpanel" aria-labelledby="heading{{ date }}" data-parent="#accordionEx">
+        <ul class="list-group">
+          {% for name, perf_list in p_list %}
+          <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px; border:none;">
+            <a href="{% url 'performances-specific' pk=perf_list.0.performance.pk pi=perf_list.0.pk  %}"><div class="large-dataheader" style="line-height:100%">{{ name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      <!-- Card body -->
+    </div>
+    {% endfor %}
+    <!-- Card -->
+  </div>
 </div>
 
 {% if pi %}

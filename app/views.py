@@ -183,35 +183,38 @@ def view_organizations(request):
     )   
 
 class Performances(LoginRequiredMixin, generic.View):
-    def get(self, request):
+    def get(self, request, y):
         if not self.request.user.is_authenticated:
             return Performance.objects.none()
 
         # Gets the most recent record per organization
-        #performances = Performance.objects.all()
-        performanceinstances = PerformanceInstance.objects.filter(performance__type='P')
+        performanceinstances = PerformanceInstance.objects.filter(date__year=y).filter(performance__type='P')
+        years = range(datetime.datetime.now().year,2003,-1)
     
         return render(
             request,
             'performances.html',
             context={
                 'performanceinstances':performanceinstances,
-                'nbar': 'vocalcv',
+                'years':years,
+                'year_selected':y,
+                'nbar':'vocalcv',
             },
         )
 class PerformancesSpecific(LoginRequiredMixin, generic.View):
-    def get(self, request, pk, pi):
+    def get(self, request, y, pk, pi):
         if not self.request.user.is_authenticated:
             return Performance.objects.none()
 
         # Gets the most recent record per organization
         #performances = Performance.objects.all()
-        performanceinstances_all = PerformanceInstance.objects.filter(performance__type='P')
+        performanceinstances_all = PerformanceInstance.objects.filter(date__year=y).filter(performance__type='P')
 
         performance_specific = Performance.objects.get(pk=pk)
         performanceinstances_specific = PerformanceInstance.objects.filter(performance=pk).order_by('date')
 
         pieces = PerformancePiece.objects.filter(performanceinstance__performance=pk)
+        years = range(datetime.datetime.now().year,2003,-1)
 
         pieces_grouped = {}
         for p in pieces:
@@ -227,7 +230,9 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
             'performance_specific':performance_specific,
             'performanceinstances_specific':performanceinstances_specific,
             'pieces':pieces_grouped,
-            'nbar': 'vocalcv',
+            'years':years,
+            'year_selected':y,
+            'nbar':'vocalcv',
             }
         return render(
             request,

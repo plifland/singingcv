@@ -50,8 +50,8 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'replist' %}">REPERTOIRE LIST</a>
-              <a class="dropdown-item" href="{% url 'performances' %}">PERFORMANCES</a>
               {% now "Y" as current_year %}
+              <a class="dropdown-item" href="{% url 'performances' y=current_year %}">PERFORMANCES</a>
               <a class="dropdown-item" href="{% url 'services' y=current_year %}">SERVICES</a>
               <a class="dropdown-item {% if nbar == 'vocalcv_about' %}active{% endif %}" href="{% url 'vocalcv' %}">ABOUT</a>
             </div>
