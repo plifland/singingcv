@@ -19,7 +19,7 @@ urlpatterns = [
     path('performance-pieces/<int:pk>', views.performance_pieces, name='performance-pieces'),
     path('performance-pieces-all/<int:pk>', views.performance_pieces_all, name='performance-pieces-all'),
 
-    path('services', views.Services.as_view(), name='services'),
+    path('services/<int:y>', views.Services.as_view(), name='services'),
 
     path('replist', views.rep_list, name='replist'),
 

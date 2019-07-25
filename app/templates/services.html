@@ -4,6 +4,9 @@
 <div class="w3-row">
 
   <h1>Services</h1>
+  <h4>
+      {% for yr in years %}{% if yr == year_selected %}<span style="font-size:120%">{{ yr }}</span>{% else %}<a href="{% url 'services' y=yr %}">{{ yr }}</a>{% endif %}{% if not forloop.last %} | {% endif %}{% endfor %}
+  </h4>
   {% regroup pieces by performanceinstance as pieces_grouped %}
   {% for pi,p_list in pieces_grouped %}
     <h4>{{ pi.date|date:"b d, Y"|title }} - {{ pi.venue }} - {{ pi.performance.name }}</h4>

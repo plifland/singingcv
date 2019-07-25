@@ -235,17 +235,20 @@ class PerformancesSpecific(LoginRequiredMixin, generic.View):
             context,
         )
 class Services(LoginRequiredMixin, generic.View):
-    def get(self, request):
+    def get(self, request, y):
         if not self.request.user.is_authenticated:
             return Performance.objects.none()
 
-        pieces = PerformancePiece.objects.filter(performanceinstance__performance__type='S').order_by('-performanceinstance__date')
+        pieces = PerformancePiece.objects.filter(performanceinstance__date__year=y).filter(performanceinstance__performance__type='S').order_by('-performanceinstance__date','composition')
+        years = range(datetime.datetime.now().year,2010,-1)
     
         return render(
             request,
             'services.html',
             context={
                 'pieces':pieces,
+                'years':years,
+                'year_selected':y,
                 'nbar':'vocalcv',
             },
         )
