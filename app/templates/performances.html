@@ -41,8 +41,8 @@
     
     <div class="w3-bar w3-black w3-card">
     <a href="#" onclick="showperformancepiecesall({{ performance_specific.pk }});return false;" class="w3-bar-item w3-button">All</a>
-    {% for pi in performanceinstances_specific %}
-    <a href="#" onclick="showperformancepieces({{ pi.pk }});return false;" class="w3-bar-item w3-button">{{ pi.date }}</a>
+    {% for pi_specific in performanceinstances_specific %}
+    <a href="#" onclick="showperformancepieces({{ pi_specific.pk }});return false;" class="w3-bar-item w3-button">{{ pi_specific.date }}</a>
     {% endfor %}
     </div>
 
@@ -68,7 +68,7 @@
         }
     </script>
 
-    <div id="perfpieces" style="">
+    <div id="perfpieces">
         <div>
             <table>
             {% for org, perf_p in pieces.items %}

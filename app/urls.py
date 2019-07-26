@@ -14,7 +14,7 @@ urlpatterns = [
     path('guestlogin', auth_views.LoginView.as_view(template_name='registration/login.html'), name='guestlogin'),
 
     path('performances/<int:y>', views.Performances.as_view(), name='performances'),
-    path('performances/<int:y>?<int:pk>&<int:pi>', views.PerformancesSpecific.as_view(), name='performances-specific'),
+    path('performances?<int:y>&<int:pk>&<int:pi>', views.PerformancesSpecific.as_view(), name='performances-specific'),
     #path('performance-detail/<int:pk>', views.performance_detail, name='performance-detail'),
     path('performance-pieces/<int:pk>', views.performance_pieces, name='performance-pieces'),
     path('performance-pieces-all/<int:pk>', views.performance_pieces_all, name='performance-pieces-all'),

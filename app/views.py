@@ -280,7 +280,9 @@ def performance_pieces(request, pk):
     return render(
         request,
         'performancepieces.html',
-        {'pieces':pieces_grouped},
+        context={
+            'pieces':pieces_grouped,
+        },
     )
 @login_required
 def performance_pieces_all(request, pk):
