@@ -24,10 +24,10 @@
   </h4>
 
     <ul class="list-group">
-        {% regroup performanceinstances|dictsort:"performance.name" by performance.name as p_list %}
-        {% for name, perf_list in p_list %}
+        {% regroup performanceinstances|dictsort:"performance.name" by performance.id as p_list %}
+        {% for id, perf_list in p_list %}
         <li class="list-group-item" style="background-color:black; margin-top:-1px; margin-left:-1px; margin-right:-1px; border:none;">
-        <a href="{% url 'performances-specific' y=year_selected pk=perf_list.0.performance.pk pi=perf_list.0.pk  %}"><div class="large-dataheader" style="line-height:100%">{{ name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
+        <a href="{% url 'performances-specific' y=year_selected pk=perf_list.0.performance.pk pi=perf_list.0.pk  %}"><div class="large-dataheader" style="line-height:100%">{{ perf_list.0.performance.name }}</div>{% for org in perf_list.0.organizations.all %}<div class="small-subdata">{{ org.organization.name }}</div>{% endfor %}</a>
         </li>
         {% endfor %}
     </ul>
