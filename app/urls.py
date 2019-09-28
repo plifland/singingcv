@@ -25,7 +25,7 @@ urlpatterns = [
 
     path('organizations/', views.OrganizationListView.as_view(), name='organizations'),
     path('organization/<int:pk>', views.org_details, name='organization-detail'),
-    re_path(r'^organization/(?P<pk>[\w\s:\-]+)$', views.org_details, name='organization-detail-name'),
+    re_path(r'^organization/(?P<pk>[\w\s:\-\']+)$', views.org_details, name='organization-detail-name'),
     path('composition/<int:pk>', views.composition_details, name='composition-detail'),
 
     path('accounts/', include('django.contrib.auth.urls')),
