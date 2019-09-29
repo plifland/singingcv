@@ -9,16 +9,16 @@
     
     {% if upcoming_ser.all %}
     <div class="d-none d-md-block" style="position:absolute; left:20px; bottom:20px;
-		    border:5px solid tan; border-radius:10px; padding-top:5px; padding-bottom:15px; padding-left:15px; padding-right:15px; background:rgba(0,0,0,0.65);">
+		    border:5px solid tan; border-radius:10px; padding-top:15px; padding-bottom:15px; padding-left:15px; padding-right:0px; background:rgba(0,0,0,0.65);">
 	    <div class="" style="font-size:120%;">This week's services</div>
         
         {% for prf in upcoming_ser %}
         <div class="row" style="margin-bottom:5px;">
-		    <div class="col-1" style="margin-left:20px; min-width:77px;">
+		    <div class="col-1" style="margin-left:10px;">
 			    <span style="font-size:100%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"b"|upper }}</span><br />
 			    <span style="font-size:170%; font-weight:bold; line-height:0.8em; margin-left:-1px;">{{ prf.date|date:"d" }}</span>
 		    </div>
-		    <div class="col-8" style="padding-top:10px; min-width:300px; padding-right:0px;">
+		    <div class="col-10" style="padding-top:10px; min-width:300px; padding-right:0px; margin-left:10px;">
 			    <p style="font-size:100%; margin:0px; line-height:1em; margin-bottom:3px; max-width:300px; white-space: nowrap; overflow:hidden;">{{ prf.performance.name }}</p>
 			    <p style="font-size:80%; margin:0px; line-height:1em; max-width:300px; padding-bottom:1px; white-space: nowrap; overflow:hidden;">{{ prf.venue }}, {{ prf.city }}</p>
 		    </div>
