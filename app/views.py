@@ -2,6 +2,7 @@ import datetime
 import json
 import urllib
 
+from datetime import timedelta
 from django.db.models import Max,Q,Count,F,CharField,Value as V
 from django.shortcuts import render,get_list_or_404,get_object_or_404
 from django.views import generic
@@ -80,12 +81,14 @@ def vocalcv(request):
     )
 
 def home(request):
-    upcoming = []
-    performances = PerformanceInstance.objects.all().filter(date__gte = datetime.date.today()).order_by('date')
+    thisweekend = datetime.date.today() + timedelta(days=7)
+    upcoming_prf = []
+    performances = PerformanceInstance.objects.filter(performance__type='P').filter(date__gte = datetime.date.today()).order_by('date')
+    services = PerformanceInstance.objects.filter(performance__type='S').filter(date__gte = datetime.date.today()).filter(date__lte = thisweekend).order_by('date')
     
     i = 0
     for prf in performances:
-        upcoming.append(prf)
+        upcoming_prf.append(prf)
 
         i += 1
         if i == 3:
@@ -95,7 +98,8 @@ def home(request):
         request,
         'home.html',
         context={
-            'upcoming':upcoming,
+            'upcoming_prf':upcoming_prf,
+            'upcoming_ser':services,
             'nbar': 'home',
         },
     )
