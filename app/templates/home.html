@@ -14,9 +14,9 @@
         
         {% for prf in upcoming_ser %}
         <div class="row" style="margin-bottom:5px;">
-		    <div class="col-1" style="margin-left:10px;">
+		    <div class="col-1" style="margin-left:10px; padding-right:0px; text-align:center">
 			    <span style="font-size:100%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"b"|upper }}</span><br />
-			    <span style="font-size:170%; font-weight:bold; line-height:0.8em; margin-left:-1px;">{{ prf.date|date:"d" }}</span>
+			    <span style="font-size:170%; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"d" }}</span>
 		    </div>
 		    <div class="col-10" style="padding-top:10px; max-width:300px; padding-right:0px; margin-left:10px;">
 			    <p style="font-size:100%; margin:0px; line-height:1em; margin-bottom:3px; max-width:300px; white-space: nowrap; overflow:hidden;">{{ prf.performance.name }}</p>
@@ -33,28 +33,15 @@
     
         {% for prf in upcoming_prf %}
         <div class="row" style="margin-bottom:5px;">
-		    <div class="col-2" style="background: rgba(210,180,140,1); padding-top:10px; padding-bottom:5px; margin-left:20px; min-width:77px;">
+		    <div class="col-2" style="padding-top:10px; padding-right:0px; padding-bottom:5px; margin-left:20px; min-width:77px; text-align:center;">
 			    <span style="font-size:140%; letter-spacing:2px; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"b"|upper }}</span><br />
-			    <span style="font-size:260%; font-weight:bold; line-height:0.8em; margin-left:-2px;">{{ prf.date|date:"d" }}</span>
+			    <span style="font-size:260%; font-weight:bold; line-height:0.8em;">{{ prf.date|date:"d" }}</span>
 		    </div>
 		    <div class="col-8" style="padding-top:10px; max-width:300px; padding-right:0px;">
 			    <p style="font-size:140%; margin:0px; line-height:1em; margin-bottom:3px; max-width:300px; white-space: nowrap; overflow:hidden;">{{ prf.performance.name }}</p>
 			    <p style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px; max-width:300px; white-space: nowrap; overflow:hidden;">{% with prf.organizations.all|first as org %}{{ org.organization.name }} - {% if org.conductors.count > 1 %}multiple{% else %}{% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% endwith %}</p>
 			    <p style="margin:0px; line-height:1em; max-width:300px; padding-bottom:1px; white-space: nowrap; overflow:hidden;">{{ prf.venue }}, {{ prf.city }}</p>
 		    </div>
-	    </div>
-        {% endfor %}
-    </div>
-
-    <div class="d-md-none" style="margin-left:10px;">
-	    <div class="" style="font-size:160%; margin-top:10px; margin-bottom:10px;">Upcoming Performances</div>
-    
-        {% for prf in upcoming_prf %}
-        <div style="margin-bottom:20px;">
-		    <div style="font-size:160%; letter-spacing:2px; line-height:1em;">{{ prf.date|date:"b"|upper }} {{ prf.date|date:"d" }}</div>
-			<div style="font-size:130%; margin:0px; line-height:1em; margin-bottom:3px;">{{ prf.performance.name }}</div>
-			<div style="margin:0px; line-height:1em; margin-bottom:1px; padding-bottom:1px;">{% with prf.organizations.all|first as org %}{{ org.organization.name }} - {% if org.conductors.count > 1 %}multiple{% else %}{% for con in org.conductors.all %}{{ con.person.get_full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% endwith %}</div>
-			<div style="margin:0px; line-height:1em; padding-bottom:1px;">{{ prf.venue }}, {{ prf.city }}</div>
 	    </div>
         {% endfor %}
     </div>
