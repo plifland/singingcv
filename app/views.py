@@ -248,7 +248,7 @@ class Services(LoginRequiredMixin, generic.View):
         if not self.request.user.is_authenticated:
             return Performance.objects.none()
 
-        pieces = PerformancePiece.objects.filter(performanceinstance__date__year=y).filter(performanceinstance__performance__type='S').order_by('-performanceinstance__date','composition')
+        pieces = PerformancePiece.objects.filter(performanceinstance__date__year=y).filter(performanceinstance__performance__type='S').order_by('-performanceinstance__date','performanceinstance__performance','composition')
         years = range(datetime.datetime.now().year,2010,-1)
     
         return render(
