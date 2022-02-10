@@ -1,4 +1,4 @@
-django==2.2.7
+django==2.2.27
 pytz==2018.5
 setuptools==39.0.1
 django-autocomplete-light==3.3.2
