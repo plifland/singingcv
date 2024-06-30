@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'Django_SingingCV.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'singingcv',
         'USER': 'postgres',
         'PASSWORD': 'hopfield',
