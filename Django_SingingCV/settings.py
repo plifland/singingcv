@@ -28,7 +28,7 @@ SECRET_KEY = os.environ['SECRET_KEY']
 DEBUG = os.environ['DEBUG'] == 'TRUE'
 
 ALLOWED_HOSTS = [
-    'localhost',
+  'localhost',
 	'singingcv.herokuapp.com',
 	]
 
