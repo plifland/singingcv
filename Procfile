@@ -1,1 +1,1 @@
-web: gunicorn Django_SingingCV.wsgi --log-file -
+web: gunicorn Django_SingingCV.wsgi --log-file --preload
