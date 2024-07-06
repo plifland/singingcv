@@ -47,7 +47,7 @@ class RepListFiltersForm(forms.Form):
     composer = forms.ModelChoiceField(
         required=False,
         queryset = Composer.objects.all(),
-        widget = autocomplete.ListSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
+        widget = autocomplete.ModelSelect2(url = 'composer-autocomplete', attrs={'data-html': True}),
     )
 
     org = forms.ModelChoiceField(

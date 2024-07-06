@@ -7,7 +7,6 @@
 <link rel="stylesheet" href="{% static 'css/admin-extra.css' %}">
 <script type="text/javascript" src="{% static 'autocomplete_light/autocomplete.init.js' %}"></script>
 <script type="text/javascript" src="{% static 'autocomplete_light/select2.js' %}"></script>
-{{ form.media }}
 {% endblock %}
 
 {% block content %}
@@ -69,4 +68,6 @@
     </span>
   </div>
 </div>
+
+{{ form.media }}
 {% endblock %}
