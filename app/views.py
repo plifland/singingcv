@@ -317,6 +317,8 @@ def rep_list(request):
 
     ### Filters
     composer = request.GET.get('composer')
+    if not composer:
+      composer = request.GET.get('m-composer')
     composerint = ""
     if composer:
         try:
@@ -331,18 +333,28 @@ def rep_list(request):
             except ValueError:
                 pieces = pieces
     org = request.GET.get('org')
+    if not org:
+      org = request.GET.get('m-org')
     if org:
         pieces = pieces.filter(performancepiece__organizations__organization=org)
     year = request.GET.get('year')
+    if not year:
+      year = request.GET.get('m-year')
     if year:
         pieces = pieces.filter(performancepiece__performanceinstance__date__year=year)
     era = request.GET.get('era')
+    if not era:
+      org = request.GET.get('m-era')
     if era:
         pieces = pieces.filter(tags=era)
     formg = request.GET.get('formg')
+    if not formg:
+      formg = request.GET.get('m-formg')
     if formg:
         pieces = pieces.filter(tags=formg)
     voicing = request.GET.get('voicing')
+    if not voicing:
+      voicing = request.GET.get('m-voicing')
     if voicing:
         pieces = pieces.filter(voicing=voicing)
 
