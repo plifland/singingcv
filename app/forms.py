@@ -79,6 +79,7 @@ class RepListFiltersForm(forms.Form):
         widget=forms.Select(),
         required=False,
     )
+rep_list_filters_form_mobile = RepListFiltersForm(prefix="m")
 
 ### Data input
 class OrganizationInstanceForm(forms.ModelForm):
