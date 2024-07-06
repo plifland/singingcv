@@ -446,6 +446,14 @@ def rep_list(request):
         'formg':formg,
         'voicing':voicing,
         })
+    mobilefilterform = RepListFiltersForm({
+        'composer':composerint,
+        'org':org,
+        'year':year,
+        'era':era,
+        'formg':formg,
+        'voicing':voicing,
+        }, prefix='m')
 
     return render(
         request,
@@ -453,6 +461,7 @@ def rep_list(request):
         {
             'pieces':pieces_page,
             'form':filterform,
+            'mobileform':mobilefilterform,
             'nbar': 'vocalcv',
          },
     )
